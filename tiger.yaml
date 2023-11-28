@@ -1,0 +1,22 @@
+servers:
+  fhirserver:
+    type: externalUrl
+    source:
+      - http://localhost:9032
+
+lib:
+  activateWorkflowUi: true
+
+additionalYamls:
+  - filename: src/test/resources/testdata/basis.yaml
+    baseKey: data
+  - filename: src/test/resources/testdata/dokumentenaustausch.yaml
+    baseKey: data
+  - filename: src/test/resources/testdata/medikation.yaml
+    baseKey: data
+  - filename: src/test/resources/testdata/terminplanung.yaml
+    baseKey: data
+  - filename: src/test/resources/testdata/vitalparameter.yaml
+    baseKey: data
+  - filename: src/test/resources/testdata/shared.yaml
+    baseKey: data

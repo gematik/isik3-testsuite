@@ -1,0 +1,13 @@
+observation-read-atemfrequenz-id: Observation-Read-Atemfrequenz-Example
+encounter-read-in-progress-id: Encounter-Read-In-Progress-Example
+patient-read-id: Patient-Read-Example
+observation-read-blutdruck-id: Observation-Read-Blutdruck-Example
+observation-read-ekg-id: Observation-Read-EKG-Example
+device-id: Example
+observation-read-gcs-id: Observation-Read-GCS-Example
+observation-read-herzfrequenz-id: Observation-Read-Herzfrequenz-Example
+observation-read-koerpergewicht-id: Observation-Read-Koerpergewicht-Example
+observation-read-koerpergroesse-id: Observation-Read-Koerpergroesse-Example
+observation-read-koerpertemperatur-id: Observation-Read-Koerpertemperatur-Example
+observation-read-kopfumfang-id: Observation-Read-Kopfumfang-Example
+observation-read-sauerstoffsaettigung-id: Observation-Read-Sauerstoffsaettigung-Example

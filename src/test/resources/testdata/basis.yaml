@@ -1,0 +1,11 @@
+codesystem-read-id: CodeSystem-Read-Example
+condition-read-active-id: Condition-Read-Active-Example
+encounter-read-in-progress-id: Encounter-Read-In-Progress-Example
+patient-read-id: Patient-Read-Example
+procedure-read-id: Procedure-Read-Example
+relatedperson-read-id: RelatedPerson-Read-Example
+valueset-read-id: ValueSet-Read-Example
+coverage-read-private-id: Coverage-Read-Private-Example
+coverage-read-statutory-id: Coverage-Read-Statutory-Example
+patient-read-identifier-system: http://testkrankenhaus.de/fhir/sid/Patient
+patient-read-identifier-value: IdentifierValuepatient-read
