@@ -1,0 +1,10 @@
+appointment-read-id: Appointment-Read-Example
+communication-read-id: Communication-Read-Example
+patient-read-id: Patient-Read-Example
+practitioner-read-id: Practitioner-Read-Example
+slot-read-id: Slot-Read-Example
+encounter-read-appointment-id: Encounter-Read-Appointment-Example
+encounter-read-appointment-identifier-system: https://test.krankenhaus.de/fhir/sid/fallnr
+encounter-read-appointment-identifier-value: 0123456789
+healthcareservice-read-id: HealthcareService-Read-Example
+schedule-read-id: Schedule-Read-Example

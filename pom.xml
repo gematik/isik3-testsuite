@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.gematik</groupId>
+    <artifactId>tiger-integration-isik-stufe-3</artifactId>
+    <version>0.3.0</version>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tiger.version>2.2.1</tiger.version>
+        <tiger.fhir.version>1.2.0</tiger.fhir.version>
+        <serenity.version>3.3.10</serenity.version>
+        <cucumber.version>7.11.2</cucumber.version>
+        <junit5.version>5.8.2</junit5.version>
+        <spotless-maven-plugin.version>2.40.0</spotless-maven-plugin.version>
+        <spotless.google-java-format.version>1.18.1</spotless.google-java-format.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>mandatory</id>
+            <properties>
+                <category.tags>and @mandatory</category.tags>
+            </properties>
+        </profile>
+        <profile>
+            <id>optional</id>
+            <properties>
+                <category.tags>and @optional</category.tags>
+            </properties>
+        </profile>
+        <profile>
+            <id>all</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!--suppress UnresolvedMavenProperty -->
+                <catalogue.tags>or @terminplanung or @basis or @dokumentenaustausch or @medikation</catalogue.tags>
+                <category.tags>and @mandatory</category.tags>
+            </properties>
+        </profile>
+        <profile>
+            <id>basis</id>
+            <properties>
+                <catalogue.tags>or @basis</catalogue.tags>
+            </properties>
+        </profile>
+        <profile>
+            <id>dokumentenaustausch</id>
+            <properties>
+                <catalogue.tags>or @dokumentenaustausch</catalogue.tags>
+            </properties>
+        </profile>
+        <profile>
+            <id>medikation</id>
+            <properties>
+                <catalogue.tags>or @medikation</catalogue.tags>
+            </properties>
+        </profile>
+        <profile>
+            <id>terminplanung</id>
+            <properties>
+                <catalogue.tags>or @terminplanung</catalogue.tags>
+            </properties>
+        </profile>
+        <profile>
+            <id>vitalparameter</id>
+            <properties>
+                <catalogue.tags>or @vitalparameter</catalogue.tags>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.gematik.test</groupId>
+            <artifactId>tiger-test-lib</artifactId>
+            <version>${tiger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.gematik.test.tiger</groupId>
+            <artifactId>tiger-on-fhir</artifactId>
+            <version>${tiger.fhir.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>de.gematik.test</groupId>
+                <artifactId>tiger-maven-plugin</artifactId>
+                <version>${tiger.version}</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <glues>
+                                <glue>de.gematik.test.tiger.glue</glue>
+                                <glue>de.gematik.glue</glue>
+                            </glues>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <driverClassName>TestDriver${ctr}IT</driverClassName>
+                        </configuration>
+                        <phase>generate-test-sources</phase>
+                        <id>generate-tiger-drivers</id>
+                        <goals>
+                            <goal>generate-drivers</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>generate-tiger-report</id>
+                        <goals>
+                            <goal>
+                                generate-serenity-reports
+                            </goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <testFailureIgnore>true</testFailureIgnore>
+                    <forkedProcessExitTimeoutInSeconds>18000</forkedProcessExitTimeoutInSeconds>
+                    <includes>
+                        <include>**/TestDriver*IT.java</include>
+                    </includes>
+                    <systemPropertyVariables>
+                        <cucumber.filter.tags>
+                            (@placeholder ${catalogue.tags}) ${category.tags}
+                        </cucumber.filter.tags>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.serenity-bdd.maven.plugins</groupId>
+                <artifactId>serenity-maven-plugin</artifactId>
+                <version>${serenity.version}</version>
+                <configuration>
+                    <tags>${cucumber.tags}</tags>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>serenity-reports</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless-maven-plugin.version}</version>
+                <configuration>
+                    <formats>
+                        <!-- you can define as many formats as you want, each is independent -->
+                        <format>
+                            <!-- define the files to apply to -->
+                            <includes>
+                                <include>**/*.yml</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/target/**/*</exclude>
+                            </excludes>
+                            <!-- define the steps to apply to those files -->
+                            <trimTrailingWhitespace/>
+                            <endWithNewline/>
+                            <indent>
+                                <spaces>true</spaces>
+                                <spacesPerTab>2</spacesPerTab>
+                            </indent>
+                        </format>
+                    </formats>
+                    <java>
+                        <toggleOffOn/>
+                        <googleJavaFormat>
+                            <version>${spotless.google-java-format.version}</version>
+                            <style>GOOGLE</style>
+                            <reflowLongStrings>true</reflowLongStrings>
+                        </googleJavaFormat>
+                    </java>
+                    <groovy>
+                        <includes>
+                            <include>**/*.Jenkinsfile</include>
+                        </includes>
+                        <importOrder/>
+                    </groovy>
+                    <markdown>
+                        <includes>
+                            <include>**/*.md</include>
+                        </includes>
+                        <excludes>
+                            <exclude>**/target/**/*</exclude>
+                        </excludes>
+                    </markdown>
+                </configuration>
+            </plugin>
+        </plugins>
+        <defaultGoal>clean install</defaultGoal>
+    </build>
+</project>
