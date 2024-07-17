@@ -1,4 +1,4 @@
-<img align="right" width="250" height="47" src="docs/img/gematik_logo.png"/> <br/> 
+<img align="right" width="250" height="47" src="imgs/gematik_logo.png"/> <br/> 
 
 # ISiK Stufe 3 Test Suite
 
@@ -124,7 +124,7 @@ To access an endpoint behind a proxy, you can set the proxy settings in the Mave
 Example:
 
 ```shell
-mvn -Dhttps.proxyHost=....... -Dhttps.proxyPort=..... -P Test
+mvn -Dhttps.proxyHost=....... -Dhttps.proxyPort=..... -P basis
 ```
 
 ## Contributing
