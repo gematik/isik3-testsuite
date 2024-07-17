@@ -1,4 +1,4 @@
-# Release tiger-integration-isik-stufe-3
+# Release ISiK Stufe 3 Test Suite
 
 ## Release 1.0.0
 

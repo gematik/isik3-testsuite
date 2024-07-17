@@ -1,0 +1,35 @@
+{
+  "resourceType": "Patient",
+  "id": "Patient-Update-Cancellation-Active-Example",
+  "meta": {
+    "profile": [
+      "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKPatient"
+    ]
+  },
+  "identifier": [
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MR"
+          }
+        ]
+      },
+      "system": "${data.patient-update-cancellation-identifier-system}",
+      "value": "${data.patient-update-cancellation-identifier-value}"
+    }
+  ],
+  "name": [
+    {
+      "use": "official",
+      "family": "Storno-Update-Mustermann",
+      "given": [
+        "Max"
+      ]
+    }
+  ],
+  "active": false,
+  "gender": "male",
+  "birthDate": "1968-05-13"
+}

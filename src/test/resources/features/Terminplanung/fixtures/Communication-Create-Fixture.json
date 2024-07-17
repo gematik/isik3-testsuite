@@ -1,0 +1,33 @@
+{
+  "resourceType": "Communication",
+  "id": "Communication-Create-Fixture",
+  "meta": {
+    "profile": [
+      "https://gematik.de/fhir/isik/v3/Terminplanung/StructureDefinition/ISiKNachricht"
+    ]
+  },
+  "inResponseTo": [
+    {
+      "reference": "Communication/${data.communication-read-id}"
+    }
+  ],
+  "status": "completed",
+  "subject": {
+    "reference": "Patient/${data.terminplanung-patient-id}"
+  },
+  "sent": "2023-10-01T13:00:00Z",
+  "recipient": [
+    {
+      "display": "Dr. Martina Musterfrau",
+      "reference": "Practitioner/${data.terminplanung-practitioner-id}"
+    }
+  ],
+  "payload": [
+    {
+      "contentString": "Dies ist eine eingehende Nachricht aus dem Bestätigungssystem!"
+    }
+  ],
+  "sender": {
+    "reference": "Patient/${data.terminplanung-patient-id}"
+  }
+}

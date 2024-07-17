@@ -1,0 +1,87 @@
+{
+  "resourceType": "DocumentReference",
+  "id": "DocumentReferenceUnknownPatient",
+  "meta": {
+    "profile": [
+      "https://gematik.de/fhir/isik/v3/Dokumentenaustausch/StructureDefinition/ISiKDokumentenMetadaten"
+    ]
+  },
+  "masterIdentifier": {
+    "system": "urn:ietf:rfc:3986",
+    "value": "urn:oid:1.2.840.113556.1.8000.2554.58783.21864.3474.19410.44358.58254.41281.46340"
+  },
+  "type": {
+    "coding": [
+      {
+        "system": "http://dvmd.de/fhir/CodeSystem/kdl",
+        "code": "PT130102",
+        "display": "Molekularpathologiebefund"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "system": "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8",
+      "value": "129.6.58.42.11111"
+    }
+  ],
+  "status": "current",
+  "docStatus": "final",
+  "subject": {
+    "reference": "Patient/Non-Existing-Patient-96fdda7c-d067-4183-912e-bf5ee74998a8"
+  },
+  "description": "Molekularpathologiebefund vom 31.12.21",
+  "securityLabel": [
+    {
+      "coding": [
+        {
+          "code": "N",
+          "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality"
+        }
+      ]
+    }
+  ],
+  "author": [
+    {
+      "display": "Harold Hippocrates, MD"
+    }
+  ],
+  "content": [
+    {
+      "format": {
+        "system": "http://ihe.net/fhir/ihe.formatcode.fhir/CodeSystem/formatcode",
+        "code": "urn:ihe:iti:xds:2017:mimeTypeSufficient",
+        "display": "mimeType Sufficient"
+      },
+      "attachment": {
+        "contentType": "application/pdf",
+        "language": "de",
+        "data": "base64encodedPDFdata",
+        "creation": "2022-12-31T23:50:50-05:00"
+      }
+    }
+  ],
+  "context": {
+    "encounter": [
+      {
+        "reference": "Encounter/${data.documentreference-read-encounter-id}"
+      }
+    ],
+    "facilityType": {
+      "coding": [
+        {
+          "code": "KHS",
+          "system": "http://ihe-d.de/CodeSystems/PatientBezogenenGesundheitsversorgung"
+        }
+      ]
+    },
+    "practiceSetting": {
+      "coding": [
+        {
+          "code": "ALLG",
+          "system": "http://ihe-d.de/CodeSystems/AerztlicheFachrichtungen"
+        }
+      ]
+    }
+  }
+}

@@ -10,29 +10,31 @@ Feature: Lesen der Ressource Observation (@Observation-Read-Koerpergroesse)
     Given Mit den Vorbedingungen:
     """
     - der Testdatensatz muss im zu testenden System gemäß der Vorgaben (manuell) erfasst worden sein.
-    - die ID der korrespondierenden FHIR-Ressource zu diesem Testdatensatz muss in der vitalparameter.yaml eingegeben worden sein.
+    - die ID der korrespondierenden FHIR-Ressourcen zu diesem Testdatensatz muss in der Konfigurationsvariable 'observation-read-koerpergroesse-id' hinterlegt sein.
 
     Testdatensatz (Name: Wert)
     Erfassen Sie folgendes Körpergewicht:
     Status: Abgeschlossen
     Körpergewicht: 79 kg
-    Patient: Beliebig (Bitte ID in vitalparameter.yaml eingeben)
-    Kontakt: Beliebig (Bitte ID in vitalparameter.yaml eingeben)
+    Patient: Beliebig (die verknüpfte Patient-Ressource muss konform zu ISiKPatient sein, bitte die ID in der Konfigurationsvariable 'observation-read-patient-id' hinterlegen)
+    Fallbezug: Beliebig (die verknüpfte Encounter-Ressource muss konform zu ISIKKontaktGesundheitseinrichtung sein, bitte die ID in der Konfigurationsvariable 'observation-read-encounter-id' hinterlegen)
     """
 
   Scenario: Read und Validierung des CapabilityStatements
     Then Get FHIR resource at "http://fhirserver/metadata" with content type "json"
-    And FHIR current response body evaluates the FHIRPath 'rest.where(mode = "server").resource.where(type = "Observation" and interaction.where(code = "search-type").exists()).exists()'
+    And CapabilityStatement contains interaction "read" for resource "Observation"
 
   Scenario: Read einer Observation anhand der ID
     Then Get FHIR resource at "http://fhirserver/Observation/${data.observation-read-koerpergroesse-id}" with content type "xml"
-    And FHIR current response body evaluates the FHIRPath 'id.replaceMatches("/_history/.+","").matches("${data.observation-read-koerpergroesse-id}")' with error message 'ID der Ressource entspricht nicht der angeforderten ID'
-    And FHIR current response body is a valid CORE resource and conforms to profile "http://hl7.org/fhir/StructureDefinition/Observation"
-    And FHIR current response body is a valid ISIK3 resource and conforms to profile "https://gematik.de/fhir/isik/v3/VitalparameterUndKoerpermasze/StructureDefinition/ISiKKoerpergroesse"
+    And resource has ID "${data.observation-read-koerpergroesse-id}"
+    And FHIR current response body is a valid isik3-vitalparameter resource and conforms to profile "https://gematik.de/fhir/isik/v3/VitalparameterUndKoerpermasze/StructureDefinition/ISiKKoerpergroesse"
     And TGR current response with attribute "$..status.value" matches "final"
     And FHIR current response body evaluates the FHIRPath "category.coding.where(code = 'vital-signs' and system = 'http://terminology.hl7.org/CodeSystem/observation-category').exists()" with error message 'Die Kategorie der Observation entspricht nicht dem Erwartungswert'
     And FHIR current response body evaluates the FHIRPath "code.coding.where(code = '8302-2' and system = 'http://loinc.org').exists()" with error message 'Der Code entspricht nicht dem Erwartungswert'
-    And FHIR current response body evaluates the FHIRPath "subject.reference.replaceMatches('/_history/.+','').matches('Patient/${data.patient-read-id}')" with error message 'Referenzierter Patient entspricht nicht dem Erwartungswert'
-    And FHIR current response body evaluates the FHIRPath "encounter.reference.replaceMatches('/_history/.+','').matches('Encounter/${data.encounter-read-in-progress-id}')" with error message 'Referenzierter Fall entspricht nicht dem Erwartungswert'
+    And element "subject" references resource with ID "Patient/${data.observation-read-patient-id}" with error message "Referenzierter Patient entspricht nicht dem Erwartungswert"
+    And element "encounter" references resource with ID "Encounter/${data.observation-read-encounter-id}" with error message "Referenzierter Fall entspricht nicht dem Erwartungswert"
     And FHIR current response body evaluates the FHIRPath "effective.exists()" with error message 'Die Observation enthält kein Datum'
-    And FHIR current response body evaluates the FHIRPath "value.where(value = 184 and code = 'cm' and unit.exists() and system = 'http://unitsofmeasure.org').exists()" with error message 'Der Wert der Observation entspricht nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "value.where(value ~184 and code = 'cm' and unit.exists() and system = 'http://unitsofmeasure.org').exists()" with error message 'Der Wert der Observation entspricht nicht dem Erwartungswert'
+
+    And referenced Patient resource with id "${data.observation-read-patient-id}" conforms to ISiKPatient profile
+    And referenced Encounter resource with id "${data.observation-read-encounter-id}" conforms to ISiKKontaktGesundheitseinrichtung profile

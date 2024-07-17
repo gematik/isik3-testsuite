@@ -9,12 +9,13 @@ Feature: Lesen der Ressource MedicationStatement (Rate) (@MedicationStatement-Re
     Given Mit den Vorbedingungen:
     """
       - der Testdatensatz muss im zu testenden System gemäß der Vorgaben (manuell) erfasst worden sein.
-      - die ID der korrespondierenden FHIR-Ressourcen zu diesem Testdatensatz müssen in der medikation.yaml eingegeben worden sein.
+      - die ID der korrespondierenden FHIR-Ressource zu diesem Testdatensatz muss in der Konfigurationsvariable 'medicationstatement-read-rate-id' hinterlegt sein.
+
       Legen Sie folgende Medikationsinformation in Ihrem System an:
       Status: aktiv
       Referenziertes Medikament: Beliebiges als Rate applizierbares Medikament
-      Patient: Beliebig
-      Fallbezug: Beliebig
+      Patient: Beliebig (die verknüpfte Patient-Ressource muss konform zu ISiKPatient sein, bitte die ID in der Konfigurationsvariable 'medication-patient-id' hinterlegen)
+      Fallbezug: Beliebig (die verknüpfte Encounter-Ressource muss konform zu ISIKKontaktGesundheitseinrichtung sein, bitte die ID in der Konfigurationsvariable 'medication-encounter-id' hinterlegen)
       Zeitpunkt: 2022-07-01
       Dosis (Text): 1L Infusion mit Rate 50ml/h
       Dosis: 1000ml
@@ -25,15 +26,14 @@ Feature: Lesen der Ressource MedicationStatement (Rate) (@MedicationStatement-Re
 
   Scenario: Read und Validierung des CapabilityStatements
     Then Get FHIR resource at "http://fhirserver/metadata" with content type "json"
-    And FHIR current response body evaluates the FHIRPath 'rest.where(mode = "server").resource.where(type = "MedicationStatement" and interaction.where(code = "read").exists()).exists()'
+    And CapabilityStatement contains interaction "read" for resource "MedicationStatement"
 
   Scenario: Read eines Medikaments anhand der ID
     Then Get FHIR resource at "http://fhirserver/MedicationStatement/${data.medicationstatement-read-rate-id}" with content type "xml"
-    And FHIR current response body evaluates the FHIRPath 'id.replaceMatches("/_history/.+","").matches("${data.medicationstatement-read-rate-id}")' with error message 'ID der Ressource entspricht nicht der angeforderten ID'
-    And FHIR current response body is a valid CORE resource and conforms to profile "http://hl7.org/fhir/StructureDefinition/MedicationStatement"
-    And FHIR current response body is a valid ISIK3 resource and conforms to profile "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikationsInformation"
+    And resource has ID "${data.medicationstatement-read-rate-id}"
+    And FHIR current response body is a valid isik3-medikation resource and conforms to profile "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikationsInformation"
     And TGR current response with attribute "$..status.value" matches "active"
-    And FHIR current response body evaluates the FHIRPath "dosage.where(text = '1L Infusion mit Rate 50ml/h' and doseAndRate.dose.where(code = 'mL' and system = 'http://unitsofmeasure.org' and unit = 'mL' and value = '1000').exists()).exists()" with error message 'Die Dosis entspricht nicht dem Erwartungswert'
-    And FHIR current response body evaluates the FHIRPath "dosage.doseAndRate.rate.numerator.where(value = 50 and unit = 'mL' and code = 'mL' and system = 'http://unitsofmeasure.org').exists() and dosage.doseAndRate.rate.denominator.where(value = 1 and unit = 'h' and code = 'h' and system = 'http://unitsofmeasure.org').exists()" with error message 'Die Rate entspricht nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "dosage.where(text = '1L Infusion mit Rate 50ml/h' and doseAndRate.dose.where(code = 'mL' and system = 'http://unitsofmeasure.org' and unit = 'mL' and value ~ 1000).exists()).exists()" with error message 'Die Dosis entspricht nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "dosage.doseAndRate.rate.numerator.where(value ~ 50 and unit = 'mL' and code = 'mL' and system = 'http://unitsofmeasure.org').exists() and dosage.doseAndRate.rate.denominator.where(value ~ 1 and unit = 'h' and code = 'h' and system = 'http://unitsofmeasure.org').exists()" with error message 'Die Rate entspricht nicht dem Erwartungswert'
     And FHIR current response body evaluates the FHIRPath "dosage.route.coding.where(system='http://snomed.info/sct' and code='255560000').exists()" with error message 'Die Route entspricht nicht dem Erwartungswert'
     And FHIR current response body evaluates the FHIRPath "dosage.site.coding.where(code = '6073002' and system = 'http://snomed.info/sct').exists()" with error message 'Die Körperstelle der Verabreichung entspricht nicht dem Erwartungswert'

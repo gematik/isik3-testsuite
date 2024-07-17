@@ -36,44 +36,44 @@ Feature: Testen von Suchparametern gegen die Medication Ressource (@Medication-S
 
   Scenario: Suche nach des Medikaments anhand der ID
     Then Get FHIR resource at "http://fhirserver/Medication/?_id=${data.medication-read-id}" with content type "xml"
-    And FHIR current response body evaluates the FHIRPath 'entry.resource.where(id.replaceMatches("/_history/.+","").matches("${data.medication-read-id}")).count() = 1' with error message 'Das gesuchte Medikament ${data.medication-read-id} ist nicht im Responsebundle enthalten'
+    And response bundle contains resource with ID "${data.medication-read-id}" with error message "Das gesuchte Medikament ${data.medication-read-id} ist nicht im Responsebundle enthalten"
     And FHIR current response body is a valid CORE resource and conforms to profile "https://hl7.org/fhir/StructureDefinition/Bundle"
-    And Check if current response of resource "Medication" is valid ISIK3 and conforms to profile "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikament"
+    And Check if current response of resource "Medication" is valid isik3-medikation resource and conforms to profile "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikament"
 
   Scenario: Suche nach des Medikaments anhand des Codes
     Then Get FHIR resource at "http://fhirserver/Medication/?code=http://fhir.de/CodeSystem/bfarm/atc%7CV03AB23" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all((code.coding.where(code = 'V03AB23' and system = 'http://fhir.de/CodeSystem/bfarm/atc').exists()))" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And FHIR current response body evaluates the FHIRPath "entry.resource.all((code.coding.where(code = 'V03AB23' and system = 'http://fhir.de/CodeSystem/bfarm/atc').exists()))" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
   Scenario: Suche des Medikaments anhand des Freitext Codes
     Then Get FHIR resource at "http://fhirserver/Medication/?code:text=Infusion" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(code.text.contains('Infusion'))" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And FHIR current response body evaluates the FHIRPath "entry.resource.all(code.text.contains('Infusion'))" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
   Scenario: Suche des Medikaments anhand der Abgabeform
     Then Get FHIR resource at "http://fhirserver/Medication/?form=11210000" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(form.coding.where(code = '11210000').exists())" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And FHIR current response body evaluates the FHIRPath "entry.resource.all(form.coding.where(code = '11210000').exists())" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
   Scenario: Suche des Medikaments anhand des referenzierten Bestandteils der Rezeptur
     Then Get FHIR resource at "http://fhirserver/Medication/?ingredient=Medication/${data.medication-read-referenced-ingredient}" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(ingredient.item.reference.replaceMatches('/_history/.+','').matches('${data.medication-read-referenced-ingredient}'))" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And element "ingredient.item" in all bundle resources references resource with ID "${data.medication-read-referenced-ingredient}"
 
   Scenario: Suche des Medikaments anhand des Rezeptur Codes
     Then Get FHIR resource at "http://fhirserver/Medication/?ingredient.code=L01DB01" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.where(ingredient.item.reference.replaceMatches('/_history/.+','').matches('${data.medication-read-referenced-ingredient}')).exists()" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And element "ingredient.item" in all bundle resources references resource with ID "${data.medication-read-referenced-ingredient}"
 
   Scenario: Suche des Medikaments anhand des Rezeptur Codes
     Then Get FHIR resource at "http://fhirserver/Medication/?ingredient-code=L01DB01" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.where(id.replaceMatches('/_history/.+','').matches('${data.medication-read-extended-id}')).count()=1" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And response bundle contains resource with ID "${data.medication-read-extended-id}" with error message "Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien."
 
   Scenario Outline: Suche des Medikaments anhand des <title>
     Then Get FHIR resource at "http://fhirserver/Medication/?<searchParameter>=<searchValue>" with content type "<contentType>"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(<testParameter> = '<searchValue>')" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And FHIR current response body evaluates the FHIRPath "entry.resource.all(<testParameter> = '<searchValue>')" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
     Examples:
       | title          | contentType | searchParameter | testParameter   | searchValue |

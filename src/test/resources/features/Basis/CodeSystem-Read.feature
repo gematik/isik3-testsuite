@@ -1,5 +1,5 @@
 @basis
-@mandatory
+@optional
 @CodeSystem-Read
 Feature: Lesen der Ressource CodeSystem (@CodeSystem-Read)
 
@@ -9,7 +9,7 @@ Feature: Lesen der Ressource CodeSystem (@CodeSystem-Read)
     Given Mit den Vorbedingungen:
     """
       - der Testdatensatz muss im zu testenden System gemäß der Vorgaben (manuell) erfasst worden sein.
-      - die ID der korrespondierenden FHIR-Ressource zu diesem Testdatensatz muss im basis.yaml eingegeben worden sein.
+      - die ID der korrespondierenden FHIR-Ressource zu diesem Testdatensatz muss in der Konfigurationsvariable 'codesystem-read-id' hinterlegt sein.
 
       Legen Sie das folgende CodeSystem in Ihrem System an:
       Url: http://example.org/fhir/CodeSystem/TestKatalog
@@ -22,13 +22,12 @@ Feature: Lesen der Ressource CodeSystem (@CodeSystem-Read)
 
   Scenario: Read und Validierung des CapabilityStatements
     Then Get FHIR resource at "http://fhirserver/metadata" with content type "json"
-    And FHIR current response body evaluates the FHIRPath 'rest.where(mode = "server").resource.where(type = "CodeSystem" and interaction.where(code = "read").exists()).exists()'
+    And CapabilityStatement contains interaction "read" for resource "CodeSystem"
 
   Scenario: Read eines CodeSystem anhand der ID
     Then Get FHIR resource at "http://fhirserver/CodeSystem/${data.codesystem-read-id}" with content type "xml"
-    And FHIR current response body evaluates the FHIRPath 'id.replaceMatches("/_history/.+","").matches("${data.codesystem-read-id}")' with error message "ID der Ressource entspricht nicht der angeforderten ID"
-    And FHIR current response body is a valid CORE resource and conforms to profile "http://hl7.org/fhir/StructureDefinition/CodeSystem"
-    And FHIR current response body is a valid ISIK3 resource and conforms to profile "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKCodeSystem"
+    And resource has ID "${data.codesystem-read-id}"
+    And FHIR current response body is a valid isik3-basismodul resource and conforms to profile "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKCodeSystem"
 
     And TGR current response with attribute "$..status.value" matches "active"
     And TGR current response with attribute "$..content.value" matches "complete"
