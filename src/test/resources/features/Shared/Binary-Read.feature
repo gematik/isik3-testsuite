@@ -1,4 +1,3 @@
-@basis
 @dokumentenaustausch
 @terminplanung
 @mandatory
@@ -11,7 +10,7 @@ Feature: Lesen der Ressource Binary (@Binary-Read)
     Given Mit den Vorbedingungen:
     """
       - der Testdatensatz muss im zu testenden System gemäß der Vorgaben (manuell) erfasst worden sein.
-      - die ID der korrespondierenden FHIR-Ressource zu diesem Testdatensatz muss in der shared.yaml eingegeben worden sein.
+      - die ID der korrespondierenden FHIR-Ressource zu diesem Testdatensatz muss in der Konfigurationsvariable 'binary-read-id' hinterlegt sein.
 
       Legen Sie die folgenden Binärdaten in Ihrem System an:
       Mime-Type: text/plain
@@ -20,12 +19,11 @@ Feature: Lesen der Ressource Binary (@Binary-Read)
 
   Scenario: Read und Validierung des CapabilityStatements
     Then Get FHIR resource at "http://fhirserver/metadata" with content type "json"
-    And FHIR current response body evaluates the FHIRPath 'rest.where(mode = "server").resource.where(type = "Binary" and interaction.where(code = "read").exists()).exists()'
+    And CapabilityStatement contains interaction "read" for resource "Binary"
 
-  Scenario: Read von Binärdaten anhand der ID
+  Scenario: Read von Binärdaten im FHIR-Format anhand der ID
     Then Get FHIR resource at "http://fhirserver/Binary/${data.binary-read-id}" with content type "xml"
-    And FHIR current response body evaluates the FHIRPath 'id.replaceMatches("/_history/.+","").matches("${data.binary-read-id}")' with error message 'ID der Ressource entspricht nicht der angeforderten ID'
-    And FHIR current response body is a valid CORE resource and conforms to profile "http://hl7.org/fhir/StructureDefinition/Binary"
-    And FHIR current response body is a valid ISIK3 resource and conforms to profile "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKBinary"
+    And resource has ID "${data.binary-read-id}"
+    And FHIR current response body is a valid isik3-basismodul resource and conforms to profile "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKBinary"
     And TGR current response with attribute "$..contentType.value" matches "text/plain"
     And TGR current response with attribute "$..data.value" matches "VGVzdA=="

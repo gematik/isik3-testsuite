@@ -1,0 +1,283 @@
+{
+  "resourceType": "Bundle",
+  "id": "CompositionBundleUnknownEncounter",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Composition",
+        "id": "CorrectComposition",
+        "meta": {
+          "profile": [
+            "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKBerichtSubSysteme"
+          ]
+        },
+        "text": {
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Consultation note for Henry Levin the 7th</p><p>Managed by Good Health Clinic</p></div>",
+          "status": "generated"
+        },
+        "section": [
+          {
+            "title": "History of present illness",
+            "text": {
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table><tr><td><b>Code</b></td><td><b>Date</b></td><td><b>Type</b></td><td><b>BodySite</b></td><td><b>Severity</b></td></tr><tr><td>Stroke</td><td>2010-07-18</td><td>Diagnosis</td><td/><td/></tr><tr><td>Burnt Ear</td><td>2012-05-24</td><td>Diagnosis</td><td>Left Ear</td><td/></tr><tr><td>Asthma</td><td>2012-11-12</td><td>Finding</td><td/><td>Mild</td></tr></table></div>",
+              "status": "generated"
+            }
+          }
+        ],
+        "title": "Consultation Note",
+        "type": {
+          "coding": [
+            {
+              "code": "55112-7",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "11488-4",
+                "system": "http://loinc.org"
+              }
+            ]
+          }
+        ],
+        "encounter": {
+          "reference": "urn:uuid:e25e3869-a517-425b-acfc-19e6f4ee17a8"
+        },
+        "author": [
+          {
+            "reference": "urn:uuid:2cf8991f-0b6b-42b8-86c0-2d8cf2dc852f",
+            "display": "Harold Hippocrates, MD",
+            "type": "Practitioner"
+          }
+        ],
+        "date": "2021-02-13",
+        "subject": {
+          "reference": "urn:uuid:74891afc-ed52-42a2-bcd7-f13d9b60f096"
+        },
+        "identifier": {
+          "system": "urn:ietf:rfc:3986",
+          "value": "urn:uuid:5088b8f2-95d8-415e-b24c-8041e9b5d995"
+        },
+        "status": "final"
+      },
+      "fullUrl": "urn:uuid:557d0d01-8cb4-4231-8dda-0a09e2a475e8"
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "Patient-Read-Composition-Test",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "GKV",
+                  "system": "http://fhir.de/CodeSystem/identifier-type-de-basis"
+                }
+              ]
+            },
+            "system": "http://fhir.de/sid/gkv/kvid-10",
+            "value": "X485231029"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MR",
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                }
+              ]
+            },
+            "system": "{{patient-read-identifier-system}}",
+            "value": "{{patient-read-identifier-value}}"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Graf von und zu Mustermann",
+            "_family": {
+              "extension": [
+                {
+                  "url": "http://fhir.de/StructureDefinition/humanname-namenszusatz",
+                  "valueString": "Graf"
+                },
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/humanname-own-name",
+                  "valueString": "Mustermann"
+                },
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/humanname-own-prefix",
+                  "valueString": "von und zu"
+                }
+              ]
+            },
+            "given": [
+              "Max"
+            ],
+            "prefix": [
+              "Prof."
+            ],
+            "_prefix": [
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier",
+                    "valueCode": "AC"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "use": "maiden",
+            "family": "Musterknabe",
+            "_family": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/humanname-own-name",
+                  "valueString": "Musterknabe"
+                }
+              ]
+            }
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "201-867-5309"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1968-05-12",
+        "address": [
+          {
+            "type": "both",
+            "line": [
+              "Musterstraße 3 // 1. Etage Hinterhaus"
+            ],
+            "_line": [
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName",
+                    "valueString": "Musterstraße"
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber",
+                    "valueString": "3"
+                  },
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator",
+                    "valueString": "1. Etage Hinterhaus"
+                  }
+                ]
+              }
+            ],
+            "city": "Musterdorf",
+            "postalCode": "9876",
+            "country": "CH"
+          },
+          {
+            "type": "postal",
+            "line": [
+              "Postfach 4711"
+            ],
+            "_line": [
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-postBox",
+                    "valueString": "Postfach 4711"
+                  }
+                ]
+              }
+            ],
+            "city": "Musterdorf",
+            "postalCode": "9876",
+            "country": "CH"
+          }
+        ]
+      },
+      "fullUrl": "urn:uuid:74891afc-ed52-42a2-bcd7-f13d9b60f096"
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "EncounterUnknown",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "VN",
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                }
+              ]
+            },
+            "system": "https://test.krankenhaus.de/fhir/sid/fallnr",
+            "value": "unknown"
+          }
+        ],
+        "status": "in-progress",
+        "class": {
+          "code": "IMP",
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "code": "normalstationaer",
+                "system": "http://fhir.de/CodeSystem/kontaktart-de"
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "code": "abteilungskontakt",
+                "system": "http://fhir.de/CodeSystem/Kontaktebene"
+              }
+            ]
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "code": "1500",
+              "system": "http://fhir.de/CodeSystem/dkgev/Fachabteilungsschluessel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:74891afc-ed52-42a2-bcd7-f13d9b60f096"
+        },
+        "period": {
+          "start": "2021-02-12"
+        },
+        "hospitalization": {
+          "admitSource": {
+            "coding": [
+              {
+                "code": "E",
+                "system": "http://fhir.de/CodeSystem/dgkev/Aufnahmeanlass"
+              }
+            ]
+          }
+        }
+      },
+      "fullUrl": "urn:uuid:e25e3869-a517-425b-acfc-19e6f4ee17a8"
+    }
+  ],
+  "type": "document",
+  "identifier": {
+    "system": "urn:ietf:rfc:3986",
+    "value": "urn:uuid:0c3151bd-1cbf-4d64-b04d-cd9187a4c6e0"
+  },
+  "timestamp": "2021-02-13T22:12:21Z"
+}

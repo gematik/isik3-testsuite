@@ -1,0 +1,64 @@
+{
+  "resourceType": "Appointment",
+  "id": "Appointment-Book-Incomplete-Fixture",
+  "meta": {
+    "tag": [
+      {
+        "code": "external",
+        "system": "http://fhir.de/CodeSystem/common-meta-tag-de"
+      }
+    ]
+  },
+  "status": "proposed",
+  "comment": "Dies ist ein Test Kommentar!",
+  "serviceType": [
+    {
+      "coding": [
+        {
+          "system": "${data.appointment-book-servicetype-system}",
+          "code": "${data.appointment-book-servicetype-code}"
+        }
+      ]
+    }
+  ],
+  "slot": [
+    {
+      "reference": "Slot/${appointment-book-slot-id}"
+    }
+  ],
+  "specialty": [
+    {
+      "coding": [
+        {
+          "code": "142",
+          "system": "urn:oid:1.2.276.0.76.5.114"
+        }
+      ]
+    }
+  ],
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/${data.terminplanung-patient-id}",
+        "display": "Test Patient"
+      },
+      "status": "accepted"
+    }
+  ],
+  "patientInstruction": "Bitte nüchtern erscheinen",
+  "_priority": {
+    "extension": [
+      {
+        "url": "https://gematik.de/fhir/isik/v3/Terminplanung/StructureDefinition/ISiKTerminPriorityExtension",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "code": "394848005",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

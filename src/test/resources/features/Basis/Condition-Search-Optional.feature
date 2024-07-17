@@ -1,7 +1,7 @@
 @basis
 @optional
 @Condition-Search-Optional
-Feature: Testen von  KANN-Suchparametern gegen condition-read-active (@Condition-Search-Optional)
+Feature: Testen von KANN-Suchparametern gegen condition-read-active (@Condition-Search-Optional)
 
   @vorbedingung
   Scenario: Vorbedingung
@@ -14,7 +14,7 @@ Feature: Testen von  KANN-Suchparametern gegen condition-read-active (@Condition
       Testdatensatz (Name: Wert)
       Profil: ISiK-Diagnose
       Kategorie: Diagnose im Rahmen eines Kontakts
-      Rest: Beliebig"
+      Rest: Beliebig
     """
 
   Scenario: Read und Validierung des CapabilityStatements
@@ -22,18 +22,10 @@ Feature: Testen von  KANN-Suchparametern gegen condition-read-active (@Condition
     And FHIR current response body evaluates the FHIRPaths:
     """
       rest.where(mode = "server").resource.where(type = "Condition" and interaction.where(code = "search-type").exists()).exists()
-      rest.where(mode = "server").resource.where(type = "Condition" and searchParam.where(name = "_profile" and type = "uri").exists()).exists()
       rest.where(mode = "server").resource.where(type = "Condition" and searchParam.where(name = "category" and type = "token").exists()).exists()
     """
-    And FHIR current response body is a valid CORE resource and conforms to profile "https://hl7.org/fhir/StructureDefinition/Bundle"
-    And Check if current response of resource "Condition" is valid ISIK3 and conforms to profile "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKDiagnose"
 
-  Scenario: Suche der Diagnose anhand des Profils
-    Then Get FHIR resource at "http://fhirserver/Condition/?_profile=https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKDiagnose" with content type "xml"
-    And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(meta.profile = 'https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKDiagnose')" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
-
-  Scenario: Suche der Diagnose anhand des Profils
+  Scenario: Suche der Diagnose anhand der Kategorie
     Then Get FHIR resource at "http://fhirserver/Condition/?category=encounter-diagnosis" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath 'entry.resource.all(category.coding.where(code = "encounter-diagnosis").exists())' with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And FHIR current response body evaluates the FHIRPath 'entry.resource.all(category.coding.where(code = "encounter-diagnosis").exists())' with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'

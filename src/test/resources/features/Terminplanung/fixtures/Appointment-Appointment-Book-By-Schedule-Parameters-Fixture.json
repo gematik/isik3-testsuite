@@ -1,0 +1,79 @@
+{
+  "resourceType": "Parameters",
+  "id": "Appointment-Book-By-Schedule-Parameters-Fixture",
+  "parameter": [
+    {
+      "name": "appt-resource",
+      "resource": {
+        "resourceType": "Appointment",
+        "id": "Appointment-Book-By-Schedule-Fixture",
+        "meta": {
+          "tag": [
+            {
+              "code": "external",
+              "system": "http://fhir.de/CodeSystem/common-meta-tag-de"
+            }
+          ],
+          "profile": [
+            "https://gematik.de/fhir/isik/v3/Terminplanung/StructureDefinition/ISiKTermin"
+          ]
+        },
+        "status": "proposed",
+        "start": "2024-09-01T13:00:00Z",
+        "end": "2024-09-01T14:00:00Z",
+        "comment": "Dies ist ein Test Kommentar!",
+        "serviceType": [
+          {
+            "coding": [
+              {
+                "system": "${data.schedule-read-servicetype-system}",
+                "code": "${data.schedule-read-servicetype-code}"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "code": "142",
+                "system": "urn:oid:1.2.276.0.76.5.114"
+              }
+            ]
+          }
+        ],
+        "participant": [
+          {
+            "actor": {
+              "reference": "Patient/${data.terminplanung-patient-id}",
+              "display": "Test Patient"
+            },
+            "status": "accepted"
+          }
+        ],
+        "patientInstruction": "Bitte nüchtern erscheinen",
+        "_priority": {
+          "extension": [
+            {
+              "url": "https://gematik.de/fhir/isik/v3/Terminplanung/StructureDefinition/ISiKTerminPriorityExtension",
+              "valueCodeableConcept": {
+                "coding": [
+                  {
+                    "code": "394848005",
+                    "system": "http://snomed.info/sct"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "schedule",
+      "valueReference": {
+        "reference": "Schedule/${data.schedule-read-id}"
+      }
+    }
+  ]
+}

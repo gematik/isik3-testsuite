@@ -5,7 +5,11 @@ servers:
       - http://localhost:9032
 
 lib:
-  activateWorkflowUi: true
+  activateWorkflowUi: false
+
+logging:
+  level:
+    de.gematik.rbellogger.converter: WARN
 
 additionalYamls:
   - filename: src/test/resources/testdata/basis.yaml

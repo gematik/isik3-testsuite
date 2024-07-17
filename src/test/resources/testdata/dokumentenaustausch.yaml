@@ -1,5 +1,4 @@
 documentreference-read-id: DocumentReference-Read-Example
-patient-read-id: Patient-Read-Example
-patient-read-identifier-value: IdentifierValuepatient-read
-account-read-identifier-value: 0123456789
-encounter-read-finished-id: Encounter-Read-Finished-Example
+documentreference-read-patient-id: Patient-Read-Example
+documentreference-read-encounter-id: Encounter-Read-Finished-Example
+documentreference-read-patient-identifier-value: IdentifierValuepatient-read

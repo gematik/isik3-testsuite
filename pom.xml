@@ -6,32 +6,41 @@
 
     <groupId>de.gematik</groupId>
     <artifactId>tiger-integration-isik-stufe-3</artifactId>
-    <version>0.3.0</version>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tiger.version>2.2.1</tiger.version>
-        <tiger.fhir.version>1.2.0</tiger.fhir.version>
-        <serenity.version>3.3.10</serenity.version>
-        <cucumber.version>7.11.2</cucumber.version>
-        <junit5.version>5.8.2</junit5.version>
-        <spotless-maven-plugin.version>2.40.0</spotless-maven-plugin.version>
+        <tiger.version>3.1.3</tiger.version>
+        <tiger.fhir.version>1.2.5</tiger.fhir.version>
+        <tiger-cloud-extension.version>1.0.10</tiger-cloud-extension.version>
+        <junit5.version>5.11.0-M2</junit5.version>
+        <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
         <spotless.google-java-format.version>1.18.1</spotless.google-java-format.version>
+        <lombok.version>1.18.34</lombok.version>
+        <logback.version>1.5.6</logback.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+        <mandatory.tag></mandatory.tag>
+        <catalogue.tag.basis></catalogue.tag.basis>
+        <catalogue.tag.terminplanung></catalogue.tag.terminplanung>
+        <catalogue.tag.dokumentenaustausch></catalogue.tag.dokumentenaustausch>
+        <catalogue.tag.medikation></catalogue.tag.medikation>
+        <catalogue.tag.vitalparameter></catalogue.tag.vitalparameter>
+        <maven-failsafe-plugin.version>3.3.1</maven-failsafe-plugin.version>
     </properties>
 
     <profiles>
         <profile>
             <id>mandatory</id>
             <properties>
-                <category.tags>and @mandatory</category.tags>
+                <mandatory.tag>and @mandatory</mandatory.tag>
             </properties>
         </profile>
         <profile>
             <id>optional</id>
             <properties>
-                <category.tags>and @optional</category.tags>
+                <mandatory.tag>and @optional</mandatory.tag>
             </properties>
         </profile>
         <profile>
@@ -40,39 +49,62 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <!--suppress UnresolvedMavenProperty -->
-                <catalogue.tags>or @terminplanung or @basis or @dokumentenaustausch or @medikation</catalogue.tags>
-                <category.tags>and @mandatory</category.tags>
+                <catalogue.tag.basis>or @basis</catalogue.tag.basis>
+                <catalogue.tag.terminplanung>or @terminplanung</catalogue.tag.terminplanung>
+                <catalogue.tag.dokumentenaustausch>or @dokumentenaustausch</catalogue.tag.dokumentenaustausch>
+                <catalogue.tag.medikation>or @medikation</catalogue.tag.medikation>
+                <catalogue.tag.vitalparameter>or @vitalparameter</catalogue.tag.vitalparameter>
             </properties>
         </profile>
         <profile>
             <id>basis</id>
             <properties>
-                <catalogue.tags>or @basis</catalogue.tags>
+                <catalogue.tag.basis>or @basis</catalogue.tag.basis>
             </properties>
         </profile>
         <profile>
             <id>dokumentenaustausch</id>
             <properties>
-                <catalogue.tags>or @dokumentenaustausch</catalogue.tags>
+                <catalogue.tag.dokumentenaustausch>or @dokumentenaustausch</catalogue.tag.dokumentenaustausch>
             </properties>
         </profile>
         <profile>
             <id>medikation</id>
             <properties>
-                <catalogue.tags>or @medikation</catalogue.tags>
+                <catalogue.tag.medikation>or @medikation</catalogue.tag.medikation>
             </properties>
         </profile>
         <profile>
             <id>terminplanung</id>
             <properties>
-                <catalogue.tags>or @terminplanung</catalogue.tags>
+                <catalogue.tag.terminplanung>or @terminplanung</catalogue.tag.terminplanung>
             </properties>
         </profile>
         <profile>
             <id>vitalparameter</id>
             <properties>
-                <catalogue.tags>or @vitalparameter</catalogue.tags>
+                <catalogue.tag.vitalparameter>or @vitalparameter</catalogue.tag.vitalparameter>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <tiger-configuration-yaml>tiger.yaml</tiger-configuration-yaml>
+                <testFailureIgnore>false</testFailureIgnore>
+            </properties>
+        </profile>
+        <profile>
+            <id>jenkins</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <tiger-configuration-yaml>tiger-ci.yaml</tiger-configuration-yaml>
+                <testFailureIgnore>false</testFailureIgnore>
             </properties>
         </profile>
     </profiles>
@@ -89,10 +121,9 @@
             <version>${tiger.fhir.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-junit-platform-engine</artifactId>
-            <version>${cucumber.version}</version>
-            <scope>test</scope>
+            <groupId>de.gematik</groupId>
+            <artifactId>tiger-cloud-extension</artifactId>
+            <version>${tiger-cloud-extension.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>
@@ -100,7 +131,22 @@
             <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -137,7 +183,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${maven-failsafe-plugin.version}</version>
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
@@ -145,7 +191,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${maven-failsafe-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -155,31 +201,38 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>${testFailureIgnore}</testFailureIgnore>
                     <forkedProcessExitTimeoutInSeconds>18000</forkedProcessExitTimeoutInSeconds>
                     <includes>
                         <include>**/TestDriver*IT.java</include>
                     </includes>
                     <systemPropertyVariables>
                         <cucumber.filter.tags>
-                            (@placeholder ${catalogue.tags}) ${category.tags}
+                            (@placeholder ${catalogue.tag.basis} ${catalogue.tag.dokumentenaustausch}
+                            ${catalogue.tag.medikation} ${catalogue.tag.terminplanung} ${catalogue.tag.vitalparameter})
+                            ${mandatory.tag}
                         </cucumber.filter.tags>
                     </systemPropertyVariables>
+                    <environmentVariables>
+                        <TIGER_TESTENV_CFGFILE>${tiger-configuration-yaml}</TIGER_TESTENV_CFGFILE>
+                    </environmentVariables>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>net.serenity-bdd.maven.plugins</groupId>
-                <artifactId>serenity-maven-plugin</artifactId>
-                <version>${serenity.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
                 <configuration>
-                    <tags>${cucumber.tags}</tags>
+                    <appendAssemblyId>true</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>src/test/assembly/zip.xml</descriptor>
+                    </descriptors>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>serenity-reports</id>
-                        <phase>install</phase>
+                        <phase>post-integration-test</phase>
                         <goals>
-                            <goal>check</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -188,6 +241,16 @@
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>${spotless-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>auto-style</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <!-- Using validate phase, so this happens before enforce-style -->
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
                 <configuration>
                     <formats>
                         <!-- you can define as many formats as you want, each is independent -->
@@ -215,6 +278,9 @@
                             <style>GOOGLE</style>
                             <reflowLongStrings>true</reflowLongStrings>
                         </googleJavaFormat>
+                        <licenseHeader>
+                            <file>LICENSE-HEADER</file>
+                        </licenseHeader>
                     </java>
                     <groovy>
                         <includes>

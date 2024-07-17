@@ -1,0 +1,64 @@
+{
+  "resourceType": "MedicationAdministration",
+  "id": "MedicationAdministration-Update-Original-Example",
+  "meta": {
+    "profile": [
+      "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikationsVerabreichung"
+    ]
+  },
+  "dosage": {
+    "dose": {
+      "system": "http://unitsofmeasure.org",
+      "value": 5,
+      "unit": "Brausetablette",
+      "code": "1"
+    },
+    "rateQuantity": {
+      "system": "http://unitsofmeasure.org",
+      "value": 5,
+      "code": "1"
+    },
+    "text": "Aktualisierte Dosierungsangabe",
+    "site": {
+      "coding": [
+        {
+          "code": "738956005",
+          "system": "http://snomed.info/sct",
+          "display": "Oral"
+        }
+      ]
+    },
+    "route": {
+      "coding": [
+        {
+          "code": "26643006",
+          "system": "http://snomed.info/sct",
+          "display": "Oral route"
+        }
+      ]
+    }
+  },
+  "status": "completed",
+  "medicationReference": {
+    "reference": "Medication/${data.medication-read-id}"
+  },
+  "subject": {
+    "reference": "Patient/${data.medication-patient-id}"
+  },
+  "context": {
+    "reference": "Encounter/${data.medication-encounter-id}"
+  },
+  "effectiveDateTime": "2021-07-01",
+  "performer": [
+    {
+      "actor": {
+        "reference": "Practitioner/${data.medication-practitioner-id}"
+      }
+    }
+  ],
+  "note": [
+    {
+      "text": "Aktualisierte Testnotiz"
+    }
+  ]
+}

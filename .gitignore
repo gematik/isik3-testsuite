@@ -1,5 +1,7 @@
 /.idea/
 /target/
+/tiger-integration-isik-stufe-3.iml
 
-jenkinsfiles
+.jenkins
+tiger-ci.yaml
 

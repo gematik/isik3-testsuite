@@ -1,0 +1,53 @@
+{
+  "resourceType": "MedicationStatement",
+  "id": "MedicationStatement-Create-Fixture",
+  "meta": {
+    "profile": [
+      "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikationsInformation"
+    ]
+  },
+  "dosage": [
+    {
+      "doseAndRate": [
+        {
+          "doseQuantity": {
+            "system": "http://unitsofmeasure.org",
+            "value": 1,
+            "unit": "Brausetablette",
+            "code": "1"
+          }
+        }
+      ],
+      "text": "Texttest",
+      "patientInstruction": "Instruktionstest",
+      "timing": {
+        "repeat": {
+          "when": [
+            "MORN",
+            "NOON",
+            "EVE"
+          ]
+        }
+      }
+    }
+  ],
+  "status": "active",
+  "medicationReference": {
+    "reference": "Medication/${data.medication-read-id}"
+  },
+  "subject": {
+    "reference": "Patient/${data.medication-patient-id}"
+  },
+  "context": {
+    "reference": "Encounter/${data.medication-encounter-id}"
+  },
+  "effectivePeriod": {
+    "start": "2021-07-01"
+  },
+  "dateAsserted": "2021-07-01",
+  "note": [
+    {
+      "text": "Testnotiz"
+    }
+  ]
+}

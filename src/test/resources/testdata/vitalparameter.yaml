@@ -1,6 +1,6 @@
 observation-read-atemfrequenz-id: Observation-Read-Atemfrequenz-Example
-encounter-read-in-progress-id: Encounter-Read-In-Progress-Example
-patient-read-id: Patient-Read-Example
+observation-read-encounter-id: Encounter-Read-In-Progress-Example
+observation-read-patient-id: Patient-Read-Example
 observation-read-blutdruck-id: Observation-Read-Blutdruck-Example
 observation-read-ekg-id: Observation-Read-EKG-Example
 device-id: Example

@@ -34,26 +34,26 @@ Feature: Testen von Suchparametern gegen die HealthcareService Ressource (@Healt
 
   Scenario: Suche nach dem HealthcareService anhand der ID
     Then Get FHIR resource at "http://fhirserver/HealthcareService/?_id=${data.healthcareservice-read-id}" with content type "xml"
-    And FHIR current response body evaluates the FHIRPath 'entry.resource.where(id.replaceMatches("/_history/.+","").matches("${data.healthcareservice-read-id}")).count()=1' with error message 'Der gesuchte HealthcareService ${data.healthcareservice-read-id} ist nicht im Responsebundle enthalten'
+    And response bundle contains resource with ID "${data.healthcareservice-read-id}" with error message "Der gesuchte HealthcareService ${data.healthcareservice-read-id} ist nicht im Responsebundle enthalten"
     And FHIR current response body is a valid CORE resource and conforms to profile "https://hl7.org/fhir/StructureDefinition/Bundle"
-    And Check if current response of resource "HealthcareService" is valid ISIK3 and conforms to profile "https://gematik.de/fhir/isik/v3/Terminplanung/StructureDefinition/ISiKMedizinischeBehandlungseinheit"
+    And Check if current response of resource "HealthcareService" is valid isik3-terminplanung resource and conforms to profile "https://gematik.de/fhir/isik/v3/Terminplanung/StructureDefinition/ISiKMedizinischeBehandlungseinheit"
 
   Scenario: Suche nach der Nachricht anhand des Status
     Then Get FHIR resource at "http://fhirserver/HealthcareService/?active=true" with content type "json"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(active = 'true')" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And FHIR current response body evaluates the FHIRPath "entry.resource.all(active = 'true')" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
   Scenario Outline: Suche nach der Nachricht anhand <title>
     Then Get FHIR resource at "http://fhirserver/HealthcareService/?<searchParameter>=<searchValue>" with content type "json"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(<coding>.coding.where(code='<searchValue>').exists())" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And FHIR current response body evaluates the FHIRPath "entry.resource.all(<coding>.coding.where(code='<searchValue>').exists())" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
     Examples:
       | title               | searchParameter | coding    | searchValue |
-      | des Behandlungstyps | service-type    | type      | 177         |
+      | des Behandlungstyps | service-type    | type      | ${data.healthcareservice-read-servicetype-code} |
       | der Fachrichtung    | specialty       | specialty | 142         |
 
   Scenario: Suche nach der Nachricht anhand des Namens
     Then Get FHIR resource at "http://fhirserver/HealthcareService/?name=Allgemeine%20Beratungsstelle%20der%20Fachabteilung%20Neurologie" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(name.contains('Allgemeine Beratungsstelle der Fachabteilung Neurologie'))" with error message 'Es gibt Suchergebnisse, die nicht dem Kriterium entsprechen'
+    And FHIR current response body evaluates the FHIRPath "entry.resource.all(name.contains('Allgemeine Beratungsstelle der Fachabteilung Neurologie'))" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'

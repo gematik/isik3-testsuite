@@ -1,0 +1,34 @@
+{
+  "resourceType": "Medication",
+  "id": "Medication-Update-Original-Example",
+  "meta": {
+    "profile": [
+      "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikament"
+    ]
+  },
+  "amount": {
+    "numerator": {
+      "system": "http://unitsofmeasure.org",
+      "value": 100,
+      "code": "mg"
+    },
+    "denominator": {
+      "system": "http://unitsofmeasure.org",
+      "value": 10,
+      "code": "Tablette"
+    }
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://fhir.de/CodeSystem/bfarm/atc",
+        "code": "V03AB23",
+        "display": "Acetylcystein"
+      }
+    ]
+  },
+  "status": "active",
+  "batch": {
+    "lotNumber": "123"
+  }
+}
