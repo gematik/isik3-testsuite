@@ -38,15 +38,15 @@ Feature: POST einer DocumentReference (Dokumentenbereitstellung) (@DocumentRefer
     And FHIR current response body evaluates the FHIRPath "context.where(facilityType.coding.where(code = 'KHS' and system = 'http://ihe-d.de/CodeSystems/PatientBezogenenGesundheitsversorgung').exists() and practiceSetting.where(coding.where(code = 'ALLG' and system = 'http://ihe-d.de/CodeSystems/AerztlicheFachrichtungen').exists()).exists()).exists()" with error message 'Der Kontext entspricht nicht dem Erwartungswert'
     And FHIR current response body evaluates the FHIRPath "category.coding.where(code = 'BEF' and system = 'http://ihe-d.de/CodeSystems/IHEXDSclassCode' and display = 'Befundbericht').exists()" with error message 'Die Dokumentklasse entspricht nicht dem Erwartungswert'
 
-#  Scenario Outline: POST eines inkorrekten DocumentBundles mit <variation>
+#  Scenario Outline: POST eines inkorrekten DocumentBundles
 #    Given TGR set default header "Content-Type" to "application/fhir+json"
-#    When TGR send POST request to "http://fhirserver/" with body "!{file('src/test/resources/features/Basis/fixtures/<inputFile>')}"
+#    When TGR send POST request to "http://fhirserver/" with body "!{file('src/test/resources/features/Dokumentenaustausch/fixtures/<inputFile>')}"
 #    And TGR find the last request
 #    Then TGR current response with attribute "$.responseCode" matches "<responseCode>"
 #    And FHIR current response body evaluates the FHIRPath "issue.where(severity = 'error' or 'fatal').count() >= 1" with error message 'Das OperationOutcome enthält nicht den/die geforderten Issues'
 #
 #    Examples:
-#      | variation             |  inputFile                                                 | responseCode |
-#      | unbekanntem Patienten |  DocumentReference-Post-CompositionBundleUnknownPatient.json     |    422       |
-#      | unbekanntem Encounter |  DocumentReference-Post-CompositionBundleUnknownEncounter.json   |    422       |
-#      | ohne Narrative        |  DocumentReference-Post-CompositionBundleMissingText.json        |    4\d\d     |
+#      |  inputFile                                                 | responseCode |
+#      |  DocumentReference-Post-UnknownPatient.json     |    422       |
+#      |  DocumentReference-Post-UnknownEncounter.json   |    422       |
+#      |  DocumentReference-Post-MissingAttachmentData.json        |    4\d\d     |

@@ -11,7 +11,7 @@ Feature: Testen von Suchparametern gegen Encounter-Read-Appointment (@Encounter-
       -  Der Testfall Encounter-Read-Appointment muss zuvor erfolgreich ausgeführt worden sein.
     """
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
     When Get FHIR resource at "http://fhirserver/metadata" with content type "json"
     And FHIR current response body evaluates the FHIRPaths:
     """

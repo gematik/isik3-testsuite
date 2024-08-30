@@ -18,7 +18,7 @@ Feature: Testen von Suchparametern gegen die MedicationAdministration Ressource 
       rest.where(mode = "server").resource.where(type = "MedicationAdministration" and interaction.where(code = "search-type").exists()).exists()
     """
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
     And FHIR current response body evaluates the FHIRPaths:
     """
       rest.where(mode = "server").resource.where(type = "MedicationAdministration" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
@@ -44,7 +44,8 @@ Feature: Testen von Suchparametern gegen die MedicationAdministration Ressource 
   Scenario: Suche der Medikationsverabreichung anhand des Codes
     Then Get FHIR resource at "http://fhirserver/MedicationAdministration/?code=http://fhir.de/CodeSystem/bfarm/atc%7CV03AB23" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all((medication.coding.where(code = 'V03AB23' and system = 'http://fhir.de/CodeSystem/bfarm/atc').exists()))" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
+    # The below assertion checks only entries with existing medication as CodableConcept and ignores others, which can be medicationReferences (cf. ANFISK-314)
+    And FHIR current response body evaluates the FHIRPath "entry.resource.where(medication.coding.empty().not()).medication.coding.where(code = 'V03AB23' and system = 'http://fhir.de/CodeSystem/bfarm/atc').exists()" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
   Scenario: Suche der Medikationsverabreichung anhand des Kontexts
     Then Get FHIR resource at "http://fhirserver/MedicationAdministration/?context=Encounter/${data.medication-encounter-id}" with content type "xml"
@@ -69,7 +70,7 @@ Feature: Testen von Suchparametern gegen die MedicationAdministration Ressource 
   Scenario: Suche der Medikationsverabreichung anhand des Medikationscodes
     Then Get FHIR resource at "http://fhirserver/MedicationAdministration/?medication.code=http://fhir.de/CodeSystem/bfarm/atc%7CV03AB23" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(medication.coding.where(code = 'V03AB23' and system = 'http://fhir.de/CodeSystem/bfarm/atc').exists() or medication.reference.replaceMatches('/_history/.+','').matches('Medication/${data.medication-read-id}$'))" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
+    And response bundle contains resource with ID "${data.medicationadministration-read-id}" with error message "Die gesuchte Medikationsverabreichung ${data.medicationadministration-read-id} ist nicht im Responsebundle enthalten"
 
   Scenario: Suche der Medikationsverabreichung anhand der Patientenreferenz
     Then Get FHIR resource at "http://fhirserver/MedicationAdministration/?patient=Patient/${data.medication-patient-id}" with content type "xml"

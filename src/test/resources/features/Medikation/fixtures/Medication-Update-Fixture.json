@@ -15,7 +15,7 @@
     "denominator": {
       "system": "http://unitsofmeasure.org",
       "value": 10,
-      "code": "Tablette"
+      "code": "{Tablette}"
     }
   },
   "code": {

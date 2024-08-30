@@ -19,10 +19,10 @@ Feature: Lesen der Ressource MedicationStatement (@MedicationStatement-Read)
       Fallbezug: Beliebig (die verknüpfte Encounter-Ressource muss konform zu ISIKKontaktGesundheitseinrichtung sein, bitte die ID in der Konfigurationsvariable 'medication-encounter-id' hinterlegen)
       Zeitraum: 2021-07-01
       Datum der Feststellung: 2021-07-01
-      Grund der Medikation: Beliebig (die verknüpfte Condition-Ressource muss konform zu ISiKDiagnose sein, bitte die ID in der Konfigurationsvariable 'medication-condition-id' hinterlegen)
+      Grund der Medikation: Beliebig, entweder als Referenz auf eine ISiKDiagnose (bitte die ID in der Konfigurationsvariable 'medication-condition-id' hinterlegen) oder als Code
       Notiz: Testnotiz
-      Dosis (Text): Testtext
-      Dosis (Instruktion): Instruktionstest
+      Dosis (Freitext-Dosierungsanweisung\): Beliebig (nicht leer)
+      Dosis (Besondere Anweisungen für den Patienten): Instruktionstest
       Dosis (Timing): Morgens, Mittags, AbendsDosis: 1 Brausetablette
     """
 
@@ -41,8 +41,13 @@ Feature: Lesen der Ressource MedicationStatement (@MedicationStatement-Read)
     And element "context" references resource with ID "Encounter/${data.medication-encounter-id}" with error message "Referenzierter Fall entspricht nicht dem Erwartungswert"
     And FHIR current response body evaluates the FHIRPath "effective.start.toString().contains('2021-07-01')" with error message 'Der Zeitraum entspricht nicht dem Erwartungswert'
     And FHIR current response body evaluates the FHIRPath "dateAsserted.toString().contains('2021-07-01')" with error message 'Das Datum der Feststellung der Medikationsinformation entspricht nicht dem Erwartungswert'
-    And element "reasonReference" references resource with ID "Condition/${data.medication-condition-id}" with error message "Grund der Medikation entspricht nicht dem Erwartungswert"
-    And FHIR current response body evaluates the FHIRPath "dosage.where(text = 'Texttest' and patientInstruction = 'Instruktionstest' and timing.repeat.where((when contains 'NOON') and (when contains 'MORN') and (when contains 'EVE')).exists() and doseAndRate.dose.where(value ~ 1 and unit = 'Brausetablette' and system = 'http://unitsofmeasure.org' and code ='1').exists()).exists()" with error message 'Die Dosis entspricht nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "(reasonCode.coding.where(code.empty().not() and system.empty().not() and display.empty().not()).exists() ) or (reasonReference.reference.replaceMatches('/_history/.+','').matches('\\bCondition/${data.medication-condition-id}$') )" with error message 'Grund der Medikation entspricht nicht dem Erwartungswert'
+
+    # The following assertions enable both single and multiple dosage-elements to be used in order to encode repeated application
+    And FHIR current response body evaluates the FHIRPath "dosage.all(text.empty().not())" with error message 'Die Freitext-Dosierungsanweisungen entsprechen nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "dosage.all(patientInstruction = 'Instruktionstest')" with error message 'Besondere Anweisungen für den Patienten entsprechen nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "dosage.all(doseAndRate.dose.where(value ~ 1 and unit = 'Brausetablette' and system = 'http://unitsofmeasure.org' and code ='1').exists())" with error message 'Angaben zu Dosis und Rate entsprechen nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "(dosage.timing.repeat.when contains 'MORN') and (dosage.timing.repeat.when contains 'NOON') and (dosage.timing.repeat.when contains 'EVE')" with error message 'Wiederholungs-Angaben entsprechen nicht dem Erwartungswert'
 
     And referenced Patient resource with id "${data.medication-patient-id}" conforms to ISiKPatient profile
     And referenced Encounter resource with id "${data.medication-encounter-id}" conforms to ISiKKontaktGesundheitseinrichtung profile

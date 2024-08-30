@@ -18,7 +18,7 @@ Feature: Testen von Suchparametern gegen die HealthcareService Ressource (@Healt
       rest.where(mode = "server").resource.where(type = "HealthcareService" and interaction.where(code = "search-type").exists()).exists()
     """
 
-  Scenario Outline: Validierung des CapabilityStatements für <searchParamValue>
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
     And FHIR current response body evaluates the FHIRPaths:
     """
       rest.where(mode = "server").resource.where(type = "HealthcareService" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
@@ -43,15 +43,15 @@ Feature: Testen von Suchparametern gegen die HealthcareService Ressource (@Healt
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And FHIR current response body evaluates the FHIRPath "entry.resource.all(active = 'true')" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
-  Scenario Outline: Suche nach der Nachricht anhand <title>
+  Scenario Outline: Suche nach der Nachricht anhand des Behandlungstyps und dann der Fachrichtung
     Then Get FHIR resource at "http://fhirserver/HealthcareService/?<searchParameter>=<searchValue>" with content type "json"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And FHIR current response body evaluates the FHIRPath "entry.resource.all(<coding>.coding.where(code='<searchValue>').exists())" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
     Examples:
-      | title               | searchParameter | coding    | searchValue |
-      | des Behandlungstyps | service-type    | type      | ${data.healthcareservice-read-servicetype-code} |
-      | der Fachrichtung    | specialty       | specialty | 142         |
+      | searchParameter | coding    | searchValue |
+      | service-type    | type      | ${data.healthcareservice-read-servicetype-code} |
+      | specialty       | specialty | 142         |
 
   Scenario: Suche nach der Nachricht anhand des Namens
     Then Get FHIR resource at "http://fhirserver/HealthcareService/?name=Allgemeine%20Beratungsstelle%20der%20Fachabteilung%20Neurologie" with content type "xml"

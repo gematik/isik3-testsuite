@@ -18,7 +18,7 @@ Feature: Testen von Suchparametern gegen die MedicationRequest Ressource (@Medic
       rest.where(mode = "server").resource.where(type = "MedicationRequest" and interaction.where(code = "search-type").exists()).exists()
     """
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
     And FHIR current response body evaluates the FHIRPaths:
     """
       rest.where(mode = "server").resource.where(type = "MedicationRequest" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
@@ -39,7 +39,7 @@ Feature: Testen von Suchparametern gegen die MedicationRequest Ressource (@Medic
 
   Scenario: Suche der Medikationsverordnung anhand der ID
     Then Get FHIR resource at "http://fhirserver/MedicationRequest/?_id=${data.medicationrequest-read-id}" with content type "xml"
-    And response bundle contains resource with ID "${data.medicationrequest-read-id}" with error message "Die gesuchte Ressource mit ID ${data.procedure-read-id} ist nicht im Responsebundle enthalten"
+    And response bundle contains resource with ID "${data.medicationrequest-read-id}" with error message "Die gesuchte Ressource mit ID ${data.medicationrequest-read-id} ist nicht im Responsebundle enthalten"
     And FHIR current response body is a valid CORE resource and conforms to profile "https://hl7.org/fhir/StructureDefinition/Bundle"
     And Check if current response of resource "MedicationRequest" is valid isik3-medikation resource and conforms to profile "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikationsVerordnung"
 
@@ -51,7 +51,8 @@ Feature: Testen von Suchparametern gegen die MedicationRequest Ressource (@Medic
   Scenario: Suche der Medikationsverordnung anhand des Codes
     Then Get FHIR resource at "http://fhirserver/MedicationRequest/?code=V03AB23" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all((medication.coding.where(code = 'V03AB23' and system = 'http://fhir.de/CodeSystem/bfarm/atc').exists()))" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
+    # The below assertion checks only entries with existing medication as CodableConcept and ignores others, which can be medicationReferences (cf. ANFISK-314)
+    And FHIR current response body evaluates the FHIRPath "entry.resource.where(medication.coding.empty().not()).medication.coding.where(code = 'V03AB23' and system = 'http://fhir.de/CodeSystem/bfarm/atc').exists()" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
   Scenario: Suche der Medikationsverordnung anhand des Datums
     Then Get FHIR resource at "http://fhirserver/MedicationRequest/?date=2021-07-01" with content type "xml"
@@ -74,14 +75,14 @@ Feature: Testen von Suchparametern gegen die MedicationRequest Ressource (@Medic
     And FHIR current response body evaluates the FHIRPath "entry.resource.all(intent = 'order')" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
   Scenario: Suche der Medikationsverordnung anhand des referenzierten Medikaments
-    Then Get FHIR resource at "http://fhirserver/MedicationRequest/?medication=Medication/${data.medication-read-id}" with content type "xml"
+    Then Get FHIR resource at "http://fhirserver/MedicationRequest/?medication=Medication/${data.medicationrequest-medication-id}" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And element "medication" in all bundle resources references resource with ID "Medication/${data.medication-read-id}"
+    And element "medication" in all bundle resources references resource with ID "Medication/${data.medicationrequest-medication-id}"
 
   Scenario: Suche der Medikationsverordnung anhand des Codes als URL
-    Then Get FHIR resource at "http://fhirserver/MedicationRequest/?code=http://fhir.de/CodeSystem/bfarm/atc%7CV03AB23" with content type "xml"
+    Then Get FHIR resource at "http://fhirserver/MedicationRequest/?medication.code=V03AB23" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(medication.coding.where(code = 'V03AB23' and system = 'http://fhir.de/CodeSystem/bfarm/atc').exists())" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
+    And response bundle contains resource with ID "${data.medicationrequest-read-id}" with error message "Die Medikationsverordnung mit ID ${data.medicationrequest-read-id} ist nicht im Responsebundle enthalten"
 
   Scenario: Suche der Medikationsverordnung anhand der Patientenreferenz
     Then Get FHIR resource at "http://fhirserver/MedicationRequest/?patient=Patient/${data.medication-patient-id}" with content type "json"

@@ -14,6 +14,7 @@ medication-practitioner-identifier: 123456789
 medication-patient-identifier: X485231029
 medication-encounter-identifier: 0123456789
 medicationrequest-read-id: MedicationRequest-Read-Example
+medicationrequest-medication-id: Medication-Read-Example
 medicationrequest-read-extended-id: MedicationRequest-Read-Extended-Example
 medicationrequest-update-id: MedicationRequest-Update-Original-Example
 medicationstatement-read-id: MedicationStatement-Read-Example

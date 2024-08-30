@@ -17,8 +17,8 @@ Feature: Lesen der Ressource List (@List-Read)
       Listenmodus: Kontinuierlich fortgeschriebene Liste
       Patient: Beliebig (die verknüpfte Patient-Ressource muss konform zu ISiKPatient sein, bitte die ID in der Konfigurationsvariable 'medication-patient-id' hinterlegen)
       Kontakt: Beliebig (die verknüpfte Encounter-Ressource muss konform zu ISIKKontaktGesundheitseinrichtung sein, bitte die ID in der Konfigurationsvariable 'medication-encounter-id' hinterlegen)
-      Datum: 2021-07-04
-      Listeneintrag 1 (Datum): 2021-07-04
+      Datum: Beliebig (nach dem 01.01.2020)
+      Listeneintrag 1 (Datum): Beliebig (nicht leer)
       Listeneintrag 1 (Medikationsinformation): Medikationsinformation aus Testfall MedicationStatement-Read
     """
 
@@ -35,8 +35,9 @@ Feature: Lesen der Ressource List (@List-Read)
     And FHIR current response body evaluates the FHIRPath "code.coding.where(code = 'medications' and system = 'http://terminology.hl7.org/CodeSystem/list-example-use-codes').exists()" with error message 'Der Code entspricht nicht dem Erwartungswert'
     And element "subject" references resource with ID "Patient/${data.medication-patient-id}" with error message "Der referenzierte Patient entspricht nicht dem Erwartungswert"
     And element "encounter" references resource with ID "Encounter/${data.medication-encounter-id}" with error message "Der referenzierte Fall entspricht nicht dem Erwartungswert"
-    And FHIR current response body evaluates the FHIRPath "date.toString().contains('2021-07-04')" with error message 'Das Datum entspricht nicht dem Erwartungswert'
-    And FHIR current response body evaluates the FHIRPath "entry.where(item.reference.replaceMatches('/_history/.+','').matches('MedicationStatement/${data.medicationstatement-read-id}$') and date.toString().contains('2021-07-04')).exists()" with error message 'Der Listeneintrag entspricht nicht dem Erwartungswert'
+    # The requirement for minimal date is used to test date search parameter in the List-Search-date test case
+    And FHIR current response body evaluates the FHIRPath "date >= @2020-01-01T00:00:00+01:00" with error message 'Das Erstellungsdatum der Liste ist nicht angegeben'
+    And FHIR current response body evaluates the FHIRPath "entry.where(item.reference.replaceMatches('/_history/.+','').matches('MedicationStatement/${data.medicationstatement-read-id}$') and date.empty().not()).exists()" with error message 'Der Listeneintrag entspricht nicht dem Erwartungswert'
 
     And referenced Patient resource with id "${data.medication-patient-id}" conforms to ISiKPatient profile
     And referenced Encounter resource with id "${data.medication-encounter-id}" conforms to ISiKKontaktGesundheitseinrichtung profile

@@ -18,8 +18,9 @@ Feature: Lesen der Ressource Practitioner (@Practitioner-Read)
       Geschlecht: männlich
       Lebenslange Arztnummer (falls vom System unterstützt): 123456789
       Einheitliche Fortbildungsnummer (falls vom System unterstützt): 123456789123456
-      Fügen Sie folgende Daten hinzu um die optionalen Suchtests durchführen zu können:
+      Telematik-ID: 123456789
       Adresse: Musterweg 13 11111 Berlin
+      Adresse (Stadtteil): Wilmersdorf
       Geschlecht: Männlich
     """
 
@@ -36,4 +37,6 @@ Feature: Lesen der Ressource Practitioner (@Practitioner-Read)
     And FHIR current response body evaluates the FHIRPath "name.where(use='official').family.matches('Musterarzt')"
     And FHIR current response body evaluates the FHIRPath "identifier.where(system='https://fhir.kbv.de/NamingSystem/KBV_NS_Base_ANR').exists().not() or (identifier.where(system='https://fhir.kbv.de/NamingSystem/KBV_NS_Base_ANR').exists() and identifier.where(system='https://fhir.kbv.de/NamingSystem/KBV_NS_Base_ANR').value = '123456789')" with error message 'Die vorgefundene LANR-Nummer entspricht nicht der Vorgabe'
     And FHIR current response body evaluates the FHIRPath "identifier.where(system='http://fhir.de/sid/bundesaerztekammer/efn').exists().not() or (identifier.where(system='http://fhir.de/sid/bundesaerztekammer/efn').exists() and identifier.where(system='http://fhir.de/sid/bundesaerztekammer/efn').value = '123456789123456')" with error message 'Die vorgefundene einheitliche Fortbildungsnummer entspricht nicht der Vorgabe'
+    And FHIR current response body evaluates the FHIRPath "identifier.where(system='https://gematik.de/fhir/sid/telematik-id' and value = '123456789').exists()" with error message 'Die Telematik-ID entspricht nicht dem Erwartungswert'
     And FHIR current response body evaluates the FHIRPath "address.where(type = 'both' and city = 'Berlin' and postalCode = '11111' and country = 'DE' and line = 'Musterweg 13' and line.extension.where(url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName' and value = 'Musterweg').exists() and line.extension.where(url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber' and value = '13').exists()).exists()" with error message 'Die Adresse entspricht nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "address.extension.where(url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-precinct' and (value as string) = 'Wilmersdorf').exists()" with error message 'Stadtteil ist falsch angegeben'

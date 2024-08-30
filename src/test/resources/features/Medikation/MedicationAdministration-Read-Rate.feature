@@ -14,7 +14,7 @@ Feature: Lesen der Ressource MedicationAdministration (Rate) (@MedicationAdminis
       Legen Sie folgende Medikationsverabreichung in Ihrem System an:
       Status: abgeschlossen
       Referenziertes Medikament: Beliebiges als Rate applizierbares Medikament
-      Dosis (Text): 1L Infusion mit Rate 50ml/h
+      Dosis (Text): Beliebig (nicht leer)
       Dosis (Gesamt): 1000ml
       Dosis (Körperstelle SNOMED CT kodiert): Linke obere Hohlvene (Structure of ligament of left superior vena cava)
       Dosis (Verabreichungsrate): 50 ml/h
@@ -29,7 +29,7 @@ Feature: Lesen der Ressource MedicationAdministration (Rate) (@MedicationAdminis
     Then Get FHIR resource at "http://fhirserver/MedicationAdministration/${data.medicationadministration-read-rate-id}" with content type "xml"
     And resource has ID "${data.medicationadministration-read-rate-id}"
     And FHIR current response body is a valid isik3-medikation resource and conforms to profile "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikationsVerabreichung"
-    And FHIR current response body evaluates the FHIRPath "dosage.text = '1L Infusion mit Rate 50ml/h'" with error message 'Der Text der Dosis entspricht nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "dosage.text.empty().not()" with error message 'Der Text der Dosis ist nicht angegeben'
     And FHIR current response body evaluates the FHIRPath "dosage.site.coding.where(code = '6073002' and system = 'http://snomed.info/sct' and display.empty().not()).exists()" with error message "Die Körperstelle der Dosis entspricht nicht dem Erwartungswert"
     And FHIR current response body evaluates the FHIRPath "dosage.route.coding.where(code = '255560000' and system = 'http://snomed.info/sct' and display.empty().not()).exists()" with error message "Die Route der Dosis entspricht nicht dem Erwartungswert"
     And FHIR current response body evaluates the FHIRPath "dosage.dose.code = 'mL' and dosage.dose.system = 'http://unitsofmeasure.org' and dosage.dose.unit = 'mL' and dosage.dose.value ~ 1000" with error message "Die Gesamtdosis entspricht nicht dem Erwartungswert"

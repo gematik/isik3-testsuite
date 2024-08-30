@@ -18,7 +18,7 @@ Feature: Testen von Suchparametern gegen die Slot Ressource (@Slot-Search)
       rest.where(mode = "server").resource.where(type = "Slot" and interaction.where(code = "search-type").exists()).exists()
     """
 
-  Scenario Outline: Validierung des CapabilityStatements für <searchParamValue>
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
     And FHIR current response body evaluates the FHIRPaths:
     """
       rest.where(mode = "server").resource.where(type = "Slot" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()

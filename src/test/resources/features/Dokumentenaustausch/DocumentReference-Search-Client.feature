@@ -18,7 +18,7 @@ Feature: Testen von Suchparametern gegen die DocumentReference Ressource (@Docum
       rest.where(mode = "server").resource.where(type = "DocumentReference" and interaction.where(code = "search-type").exists()).exists()
     """
 
-  Scenario Outline: Validierung des CapabilityStatements für <searchParamValue>
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
     And FHIR current response body evaluates the FHIRPaths:
     """
       rest.where(mode = "server").resource.where(type = "DocumentReference" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
@@ -50,14 +50,10 @@ Feature: Testen von Suchparametern gegen die DocumentReference Ressource (@Docum
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And element "subject" in all bundle resources references resource with ID "${data.documentreference-read-patient-id}"
 
-  Scenario Outline: Suche nach Dokumentenmetadaten anhand <title>
-    Then Get FHIR resource at "http://fhirserver/DocumentReference/?<searchParameter>=<searchValue>" with content type "json"
+  Scenario: Suche nach Dokumentenmetadaten anhand der Patientennummer
+    Then Get FHIR resource at "http://fhirserver/DocumentReference/?patient.identifier=${data.documentreference-read-patient-identifier-value}" with content type "json"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And response bundle contains resource with ID "${data.documentreference-read-id}" with error message "Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien."
-
-    Examples:
-      | title                   | searchParameter              | searchValue                           |
-      | der Patientennummer     | patient.identifier           | ${data.documentreference-read-patient-identifier-value} |
 
   Scenario: Suche nach Dokumentenmetadaten anhand des Kontakts
     Then Get FHIR resource at "http://fhirserver/DocumentReference/?encounter=Encounter/${data.documentreference-read-encounter-id}" with content type "json"

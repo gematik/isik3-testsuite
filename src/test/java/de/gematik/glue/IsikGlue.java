@@ -197,4 +197,30 @@ public class IsikGlue {
   public void clearDefaultHeader() {
     httpGlueCode.clearDefaultHeaders();
   }
+
+  @And(
+      "CapabilityStatement contains definition of search parameter {string} of type {string} for"
+          + " resource {string}")
+  public void capabilitystatementContainsDefinitionOfSearchParameterOfTypeForResource(
+      String searchParameter, String searchParameterType, String resourceType) {
+    fhirPathValidationGlue.tgrCurrentResponseBodyEvaluatesTheFhirPath(
+        String.format(
+            "rest.where(mode = 'server').resource.where(type = '%s' and searchParam.where(name ="
+                + " '%s' and type = '%s').exists()).exists()",
+            resourceType, searchParameter, searchParameterType),
+        String.format(
+            "CapabilityStatement-Definition for search parameter '%s' of resource '%s' is either"
+                + " missing or incorrect",
+            searchParameter, resourceType));
+  }
+
+  @And(
+      "referenced Medication resource with id {tigerResolvedString} conforms to ISiKMedication"
+          + " profile")
+  public void referencedMedicationResourceWithIdConformsToISiKMedicationProfile(String id) {
+    getAndValidateResource(String.format("http://fhirserver/Medication/%s", id), "json");
+    staticFhirValidationGlue.tgrCurrentResponseBodyAtIsValidFHIRResourceOfType(
+        staticFhirValidationGlue.supportedValidationModule("isik3-medikation"),
+        "https://gematik.de/fhir/isik/v3/Medikation/StructureDefinition/ISiKMedikament");
+  }
 }

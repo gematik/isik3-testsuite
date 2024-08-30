@@ -50,7 +50,7 @@
   "status": "completed",
   "intent": "order",
   "medicationReference": {
-    "reference": "Medication/${data.medication-read-id}"
+    "reference": "Medication/${data.medicationrequest-medication-id}"
   },
   "subject": {
     "reference": "Patient/${data.medication-patient-id}"

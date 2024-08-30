@@ -18,7 +18,7 @@ Feature: Testen von Suchparametern gegen die Medication Ressource (@Medication-S
       rest.where(mode = "server").resource.where(type = "Medication" and interaction.where(code = "search-type").exists()).exists()
     """
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
     And FHIR current response body evaluates the FHIRPaths:
     """
       rest.where(mode = "server").resource.where(type = "Medication" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
@@ -70,12 +70,12 @@ Feature: Testen von Suchparametern gegen die Medication Ressource (@Medication-S
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And response bundle contains resource with ID "${data.medication-read-extended-id}" with error message "Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien."
 
-  Scenario Outline: Suche des Medikaments anhand des <title>
+  Scenario Outline: Suche des Medikaments anhand weiterer Attribute
     Then Get FHIR resource at "http://fhirserver/Medication/?<searchParameter>=<searchValue>" with content type "<contentType>"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And FHIR current response body evaluates the FHIRPath "entry.resource.all(<testParameter> = '<searchValue>')" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
     Examples:
-      | title          | contentType | searchParameter | testParameter   | searchValue |
-      | Rezeptur Codes | xml         | lot-number      | batch.lotNumber | 123         |
-      | Status         | json        | status          | status          | active      |
+      | contentType | searchParameter | testParameter   | searchValue |
+      | xml         | lot-number      | batch.lotNumber | 123         |
+      | json        | status          | status          | active      |

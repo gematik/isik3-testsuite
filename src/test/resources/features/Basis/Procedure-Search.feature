@@ -18,11 +18,8 @@ Feature: Testen von Suchparametern gegen procedure-read (@Procedure-Search)
       rest.where(mode = "server").resource.where(type = "Procedure" and interaction.where(code = "search-type").exists()).exists()
     """
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Procedure" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
-    """
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
+    And CapabilityStatement contains definition of search parameter "<searchParamValue>" of type "<searchParamType>" for resource "Procedure"
 
     Examples:
       | searchParamValue | searchParamType |
@@ -72,15 +69,15 @@ Feature: Testen von Suchparametern gegen procedure-read (@Procedure-Search)
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And element "subject" in all bundle resources references resource with ID "${data.patient-read-id}"
 
-  Scenario Outline: Suche nach Prozeduren anhand der Referenz zum <title>
+  Scenario Outline: Suche nach Prozeduren anhand der Referenzen
     Then Get FHIR resource at "http://fhirserver/Procedure/?<path>=<query><data>" with content type "<contentType>"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And FHIR current response body evaluates the FHIRPath 'entry.resource.all(<entrytype>.reference.replaceMatches("/_history/.+","").matches("\\b<data>$"))' with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
     Examples:
-      | title     | contentType | entrytype | path      | query      | data                                  |
-      | Kontakt   | xml         | encounter | encounter | Encounter/ | ${data.encounter-read-in-progress-id} |
-      | PatientIn | json        | subject   | patient   | Patient/   | ${data.patient-read-id}               |
+      | contentType | entrytype | path      | query      | data                                  |
+      | xml         | encounter | encounter | Encounter/ | ${data.encounter-read-in-progress-id} |
+      | json        | subject   | patient   | Patient/   | ${data.patient-read-id}               |
 
   Scenario: Negative Suche nach der Prozedur anhand der ID und des Status
     Then Get FHIR resource at "http://fhirserver/Procedure/?_id:not=${data.procedure-read-id}&status:not=completed" with content type "xml"

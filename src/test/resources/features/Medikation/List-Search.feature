@@ -18,7 +18,7 @@ Feature: Testen von Suchparametern gegen die Medikationsliste aus List-read (@Li
       rest.where(mode = "server").resource.where(type = "List" and interaction.where(code = "search-type").exists()).exists()
     """
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
     And FHIR current response body evaluates the FHIRPaths:
     """
       rest.where(mode = "server").resource.where(type = "List" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
@@ -46,9 +46,9 @@ Feature: Testen von Suchparametern gegen die Medikationsliste aus List-read (@Li
     And FHIR current response body evaluates the FHIRPath "entry.resource.all(code.coding.where(code = 'medications' and system = 'http://terminology.hl7.org/CodeSystem/list-example-use-codes').exists())" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
   Scenario: Suche der Liste anhand des Datums
-    Then Get FHIR resource at "http://fhirserver/List/?date=2021-07-04" with content type "xml"
+    Then Get FHIR resource at "http://fhirserver/List/?date=ge2020-01-01" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
-    And FHIR current response body evaluates the FHIRPath "entry.resource.all(date.toString().contains('2021-07-04'))" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
+    And response bundle contains resource with ID "${data.list-read-id}" with error message "Die gesuchte Liste ${data.list-read-id} ist nicht im Responsebundle enthalten"
 
   Scenario: Suche der Liste anhand der Referenz zum Fall
     Then Get FHIR resource at "http://fhirserver/List/?encounter=Encounter/${data.medication-encounter-id}" with content type "xml"
