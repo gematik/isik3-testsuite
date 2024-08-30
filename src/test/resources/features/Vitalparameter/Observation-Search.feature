@@ -19,7 +19,7 @@ Feature: Testen von Suchparametern gegen observation-read-blutdruck (@Observatio
     rest.where(mode = "server").resource.where(type = "Observation" and interaction.where(code = "search-type").exists()).exists()
     """
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
     And FHIR current response body evaluates the FHIRPaths:
     """
       rest.where(mode = "server").resource.where(type = "Observation" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
@@ -73,15 +73,15 @@ Feature: Testen von Suchparametern gegen observation-read-blutdruck (@Observatio
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And element "subject" in all bundle resources references resource with ID "Patient/${data.observation-read-patient-id}"
 
-  Scenario Outline: Suche nach Observations anhand der Referenz zum <title>
+  Scenario Outline: Suche nach Observations anhand der Referenzen
     Then Get FHIR resource at "http://fhirserver/Observation/?<path>=<query><data>" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And FHIR current response body evaluates the FHIRPath "entry.resource.all(<entrytype>.reference.replaceMatches('/_history/.+','').matches('\\b<data>$'))" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
     Examples:
-      | title     | entrytype | path      | query      | data                                  |
-      | Fall      | encounter | encounter | Encounter/ | ${data.observation-read-encounter-id} |
-      | PatientIn | subject   | patient   | Patient/   | ${data.observation-read-patient-id}               |
+      | entrytype | path      | query      | data                                  |
+      | encounter | encounter | Encounter/ | ${data.observation-read-encounter-id} |
+      | subject   | patient   | Patient/   | ${data.observation-read-patient-id}   |
 
   Scenario: Suche der Observation anhand des Codes der Observation oder Observation.component
     Then Get FHIR resource at "http://fhirserver/Observation/?combo-code=8462-4" with content type "json"

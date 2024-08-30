@@ -35,7 +35,7 @@ Feature: Lesen der Ressource Appointment (@Appointment-Read)
     Then Get FHIR resource at "http://fhirserver/Appointment/${data.appointment-read-id}" with content type "xml"
     And resource has ID "${data.appointment-read-id}"
     And FHIR current response body is a valid isik3-terminplanung resource and conforms to profile "https://gematik.de/fhir/isik/v3/Terminplanung/StructureDefinition/ISiKTermin"
-    And FHIR current response body evaluates the FHIRPath "meta.tag.all(system = 'http://fhir.de/CodeSystem/common-meta-tag-de' and code = 'external')" with error message 'Der Wert für die Identifikation des Ursprungs entspricht nicht dem Erwartungswert'
+    And FHIR current response body evaluates the FHIRPath "meta.tag.where(system = 'http://fhir.de/CodeSystem/common-meta-tag-de').all(code = 'external')" with error message 'Der Wert für die Identifikation des Ursprungs entspricht nicht dem Erwartungswert'
     And FHIR current response body evaluates the FHIRPath "extension.where(url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Appointment.replaces' and value.reference.exists()).exists()" with error message 'Dieser Termin verweist nicht auf den ersetzten Termin'
     And TGR current response with attribute "$..Appointment.status.value" matches "cancelled"
     And FHIR current response body evaluates the FHIRPath "cancelationReason.coding.where(code = 'pat').exists()" with error message 'Der Stornierungsgrund entspricht nicht dem Erwartungswert'

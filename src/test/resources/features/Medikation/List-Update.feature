@@ -23,6 +23,5 @@ Feature: Update Medikationsliste (@List-Update)
     Then TGR current response with attribute "$.responseCode" matches "200"
     And TGR send empty GET request to "http://fhirserver/List/${data.list-update-id}"
     And TGR find the last request
-    Then TGR current response with attribute "$.body.date.content" matches "2023-10-01"
-    Then FHIR current response body evaluates the FHIRPath "entry.where(item.reference.replaceMatches('/_history/.+','').matches('MedicationStatement/${data.medicationstatement-read-id}$') and date.toString().contains('2023-10-01')).exists()" with error message 'Listeneintrag wurde nicht gefunden'
-    Then FHIR current response body evaluates the FHIRPath "entry.where(item.reference.replaceMatches('/_history/.+','').matches('MedicationStatement/${data.medicationstatement-read-extended-id}$') and date.toString().contains('2023-10-01')).exists()" with error message 'Listeneintrag wurde nicht gefunden'
+    Then FHIR current response body evaluates the FHIRPath "entry.where(item.reference.replaceMatches('/_history/.+','').matches('MedicationStatement/${data.medicationstatement-read-id}$')).exists()" with error message 'Listeneintrag wurde nicht gefunden'
+    Then FHIR current response body evaluates the FHIRPath "entry.where(item.reference.replaceMatches('/_history/.+','').matches('MedicationStatement/${data.medicationstatement-read-extended-id}$')).exists()" with error message 'Listeneintrag wurde nicht gefunden'

@@ -22,10 +22,10 @@
   "encounter": {
     "reference": "Encounter/${data.medication-encounter-id}"
   },
-  "date": "2023-10-01",
+  "date": "2021-07-04",
   "entry": [
     {
-      "date": "2023-10-01",
+      "date": "2021-07-04",
       "item": {
         "reference": "MedicationStatement/${data.medicationstatement-read-id}"
       }

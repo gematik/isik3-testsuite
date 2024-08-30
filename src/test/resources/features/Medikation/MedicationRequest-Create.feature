@@ -8,7 +8,7 @@ Feature: POST einer Medikationsverordnung (@MedicationRequest-Create)
     Given Testbeschreibung: "Das zu testende System MUSS die Ressource intern erstellen."
     Given Mit den Vorbedingungen:
       """
-        Der Testfall Medication-Read muss zuvor erfolgreich ausgeführt worden sein.
+        Keine Vorbedingungen
       """
 
   Scenario: Read und Validierung des CapabilityStatements

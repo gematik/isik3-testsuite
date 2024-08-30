@@ -14,13 +14,16 @@ Feature: Testen von Suchparametern gegen coverage-read-private (@Coverage-Search
   Scenario: Read und Validierung des CapabilityStatements
     Then Get FHIR resource at "http://fhirserver/metadata" with content type "json"
     And CapabilityStatement contains interaction "read" for resource "Coverage"
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Coverage" and interaction.where(code = "search-type").exists()).exists()
-      rest.where(mode = "server").resource.where(type = "Coverage" and searchParam.where(name = "_id" and type = "token").exists()).exists()
-      rest.where(mode = "server").resource.where(type = "Coverage" and searchParam.where(name = "beneficiary" and type = "reference").exists()).exists()
-      rest.where(mode = "server").resource.where(type = "Coverage" and searchParam.where(name = "payor" and type = "reference").exists()).exists()
-    """
+    And CapabilityStatement contains interaction "search-type" for resource "Coverage"
+
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
+    And CapabilityStatement contains definition of search parameter "<searchParamValue>" of type "<searchParamType>" for resource "Coverage"
+
+    Examples:
+      | searchParamValue | searchParamType |
+      | _id              | token           |
+      | beneficiary      | reference       |
+      | payor            | reference       |
 
   Scenario: Suche der Coverage-Ressource anhand der ID
     Then Get FHIR resource at "http://fhirserver/Coverage/?_id=${data.coverage-read-private-id}" with content type "xml"
@@ -28,15 +31,15 @@ Feature: Testen von Suchparametern gegen coverage-read-private (@Coverage-Search
     And FHIR current response body is a valid CORE resource and conforms to profile "https://hl7.org/fhir/StructureDefinition/Bundle"
     And Check if current response of resource "Coverage" is valid isik3-basismodul resource and conforms to profile "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKVersicherungsverhaeltnisSelbstzahler"
 
-  Scenario Outline: Suche nach der Coverage anhand des <title>
+  Scenario Outline: Suche nach der Coverage anhand beneficiary und dann payor
     Then Get FHIR resource at "http://fhirserver/Coverage/?<searchParameter>=Patient/<searchValue>" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And FHIR current response body evaluates the FHIRPath 'entry.resource.all(<searchParameter>.reference.replaceMatches("/_history/.+","").matches("\\b${data.patient-read-id}$"))' with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
     Examples:
-      | title        | searchParameter | searchValue             |
-      | beneficiarys | beneficiary     | ${data.patient-read-id} |
-      | payors       | payor           | ${data.patient-read-id} |
+      | searchParameter | searchValue             |
+      | beneficiary     | ${data.patient-read-id} |
+      | payor           | ${data.patient-read-id} |
 
   Scenario: Suche nach der Coverage anhand des Identifiers des beneficiaries (Chaining)
     Then Get FHIR resource at "http://fhirserver/Coverage/?beneficiary.identifier=${data.patient-read-identifier-system}%7C${data.patient-read-identifier-value}" with content type "xml"

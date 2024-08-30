@@ -13,16 +13,10 @@ Feature: Testen von Suchparametern gegen die Account Ressource (@Account-Search)
 
   Scenario: Read und Validierung des CapabilityStatements
     Then Get FHIR resource at "http://fhirserver/metadata" with content type "json"
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Account" and interaction.where(code = "search-type").exists()).exists()
-    """
+    And CapabilityStatement contains interaction "search-type" for resource "Account"
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Account" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
-    """
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
+    And CapabilityStatement contains definition of search parameter "<searchParamValue>" of type "<searchParamType>" for resource "Account"
 
     Examples:
       | searchParamValue | searchParamType |

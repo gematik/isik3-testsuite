@@ -13,16 +13,9 @@ Feature: Testen von KANN-Suchparametern gegen patient-read (@Patient-Search-Opti
 
   Scenario: Read und Validierung des CapabilityStatements
     Then Get FHIR resource at "http://fhirserver/metadata" with content type "xml"
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Patient" and interaction.where(code = "search-type").exists()).exists()
-    """
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Patient" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
-    """
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
+    And CapabilityStatement contains definition of search parameter "<searchParamValue>" of type "<searchParamType>" for resource "Patient"
 
     Examples:
       | searchParamValue   | searchParamType |

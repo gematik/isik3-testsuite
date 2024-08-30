@@ -32,14 +32,14 @@ Feature: Testen von Suchparametern gegen die ValueSet Ressource (@ValueSet-Searc
     And FHIR current response body is a valid CORE resource and conforms to profile "https://hl7.org/fhir/StructureDefinition/Bundle"
     And Check if current response of resource "ValueSet" is valid isik3-basismodul resource and conforms to profile "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKValueSet"
 
-  Scenario Outline: Suche nach CodeSystem anhand <title>
+  Scenario Outline: Suche nach CodeSystem anhand weiterer Suchparameter
     Then Get FHIR resource at "http://fhirserver/ValueSet/?<searchParameter>=<searchValue>" with content type "<contentType>"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And FHIR current response body evaluates the FHIRPath "entry.resource.all(<searchParameter> = '<searchValue>')" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
     Examples:
-      | title       | contentType | searchParameter | searchValue                                   |
-      | der URL     | xml         | url             | http://example.org/fhir/ValueSet/TestValueSet |
-      | des Namens  | json        | name            | TestValueSet                                  |
-      | des Status  | json        | status          | active                                        |
-      | der Version | json        | version         | 1.0.0                                         |
+      | contentType | searchParameter | searchValue                                   |
+      | xml         | url             | http://example.org/fhir/ValueSet/TestValueSet |
+      | json        | name            | TestValueSet                                  |
+      | json        | status          | active                                        |
+      | json        | version         | 1.0.0                                         |

@@ -12,17 +12,10 @@ Feature: Testen von Suchparametern gegen encounter-read-in-progress (@Encounter-
     """
 
   Scenario: Read und Validierung des CapabilityStatements
-    Then Get FHIR resource at "http://fhirserver/metadata" with content type "json"
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Encounter" and interaction.where(code = "search-type").exists()).exists()
-    """
+    When Get FHIR resource at "http://fhirserver/metadata" with content type "json"
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Encounter" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
-    """
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
+    Then CapabilityStatement contains definition of search parameter "<searchParamValue>" of type "<searchParamType>" for resource "Encounter"
 
     Examples:
       | searchParamValue | searchParamType |

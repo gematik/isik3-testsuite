@@ -13,16 +13,10 @@ Feature: Testen von Suchparametern gegen encounter-read-in-progress (@Encounter-
 
   Scenario: Read und Validierung des CapabilityStatements
     Then Get FHIR resource at "http://fhirserver/metadata" with content type "json"
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Encounter" and interaction.where(code = "search-type").exists()).exists()
-    """
+    And CapabilityStatement contains interaction "search-type" for resource "Encounter"
 
-  Scenario Outline: Validierung des CapabilityStatements von <searchParamValue>
-    And FHIR current response body evaluates the FHIRPaths:
-    """
-      rest.where(mode = "server").resource.where(type = "Encounter" and searchParam.where(name = "<searchParamValue>" and type = "<searchParamType>").exists()).exists()
-    """
+  Scenario Outline: Validierung der Suchparameter-Definitionen im CapabilityStatement
+    And CapabilityStatement contains definition of search parameter "<searchParamValue>" of type "<searchParamType>" for resource "Encounter"
 
     Examples:
       | searchParamValue | searchParamType |
@@ -59,12 +53,12 @@ Feature: Testen von Suchparametern gegen encounter-read-in-progress (@Encounter-
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And FHIR current response body evaluates the FHIRPath "entry.resource.all(type.coding.where(code = 'normalstationaer' and system = 'http://fhir.de/CodeSystem/kontaktart-de').exists())" with error message 'Es gibt Suchergebnisse, diese passen allerdings nicht vollständig zu den Suchkriterien.'
 
-  Scenario: Suche des Encounters anhand der Patienten-Id
+  Scenario: Suche des Encounters anhand der Patienten-Id (Suchparameter patient)
     Then Get FHIR resource at "http://fhirserver/Encounter/?patient=${data.patient-read-id}" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And element "subject" in all bundle resources references resource with ID "${data.patient-read-id}"
 
-  Scenario: Suche des Encounters anhand der Patienten-Id
+  Scenario: Suche des Encounters anhand der Patienten-Id (Suchparameter subject)
     Then Get FHIR resource at "http://fhirserver/Encounter/?subject=Patient/${data.patient-read-id}" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And element "subject" in all bundle resources references resource with ID "${data.patient-read-id}"

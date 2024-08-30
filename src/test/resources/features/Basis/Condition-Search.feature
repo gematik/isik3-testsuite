@@ -31,12 +31,12 @@ Feature: Testen von Suchparametern gegen condition-read-active (@Condition-Searc
     And FHIR current response body is a valid CORE resource and conforms to profile "https://hl7.org/fhir/StructureDefinition/Bundle"
     And Check if current response of resource "Condition" is valid isik3-basismodul resource and conforms to profile "https://gematik.de/fhir/isik/v3/Basismodul/StructureDefinition/ISiKDiagnose"
 
-  Scenario: Suche der Diagnose anhand der PatientIn
+  Scenario: Suche der Diagnose anhand der PatientIn (Suchparameter subject)
     Then Get FHIR resource at "http://fhirserver/Condition/?subject=Patient/${data.patient-read-id}" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And element "subject" in all bundle resources references resource with ID "${data.patient-read-id}"
 
-  Scenario: Suche der Diagnose anhand der PatientIn
+  Scenario: Suche der Diagnose anhand der PatientIn (Suchparameter patient)
     Then Get FHIR resource at "http://fhirserver/Condition/?patient=Patient/${data.patient-read-id}" with content type "xml"
     And FHIR current response body evaluates the FHIRPath 'entry.resource.count() > 0' with error message 'Es wurden keine Suchergebnisse gefunden'
     And element "subject" in all bundle resources references resource with ID "${data.patient-read-id}"

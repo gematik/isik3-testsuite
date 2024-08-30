@@ -17,7 +17,7 @@ Feature: POST eines Document-Bundles (@Composition-Post)
     And TGR find the last request
     Then TGR current response with attribute "$.responseCode" matches "20\d"
 
-  Scenario Outline: POST eines inkorrekten DocumentBundles mit <variation>
+  Scenario Outline: POST eines inkorrekten DocumentBundles
     Given TGR set default header "Content-Type" to "application/fhir+json"
     When TGR send POST request to "http://fhirserver/" with body "!{file('src/test/resources/features/Basis/fixtures/<inputFile>')}"
     And TGR find the last request
@@ -25,7 +25,7 @@ Feature: POST eines Document-Bundles (@Composition-Post)
     And FHIR current response body evaluates the FHIRPath "issue.where(severity = 'error' or 'fatal').count() >= 1" with error message 'Das OperationOutcome enthält nicht den/die geforderten Issues'
 
     Examples:
-      | variation             |  inputFile                                                 | responseCode |
-      | unbekanntem Patienten |  Composition-Post-CompositionBundleUnknownPatient.json     |    422       |
-      | unbekanntem Encounter |  Composition-Post-CompositionBundleUnknownEncounter.json   |    422       |
-      | ohne Narrative        |  Composition-Post-CompositionBundleMissingText.json        |    4\d\d     |
+      |  inputFile                                                 | responseCode |
+      |  Composition-Post-CompositionBundleUnknownPatient.json     |    422       |
+      |  Composition-Post-CompositionBundleUnknownEncounter.json   |    422       |
+      |  Composition-Post-CompositionBundleMissingText.json        |    4\d\d     |
